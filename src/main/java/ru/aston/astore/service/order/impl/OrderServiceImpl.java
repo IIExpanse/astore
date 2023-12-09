@@ -3,7 +3,6 @@ package ru.aston.astore.service.order.impl;
 import lombok.RequiredArgsConstructor;
 import ru.aston.astore.dto.order.NewOrderDto;
 import ru.aston.astore.dto.order.OrderDto;
-import ru.aston.astore.entity.employee.Employee;
 import ru.aston.astore.entity.order.Order;
 import ru.aston.astore.entity.order.OrderStatus;
 import ru.aston.astore.mapper.order.OrderMapper;

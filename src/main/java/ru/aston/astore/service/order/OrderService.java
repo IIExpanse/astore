@@ -2,7 +2,6 @@ package ru.aston.astore.service.order;
 
 import ru.aston.astore.dto.order.NewOrderDto;
 import ru.aston.astore.dto.order.OrderDto;
-import ru.aston.astore.entity.order.Order;
 import ru.aston.astore.entity.order.OrderStatus;
 
 import java.util.Collection;

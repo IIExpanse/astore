@@ -4,13 +4,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 import org.mockito.ArgumentMatchers;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.internal.matchers.Or;
 import ru.aston.astore.dto.order.NewOrderDto;
 import ru.aston.astore.entity.order.Order;
 import ru.aston.astore.entity.order.OrderStatus;
-import ru.aston.astore.entity.product.Product;
 import ru.aston.astore.mapper.order.OrderMapper;
 import ru.aston.astore.repository.order.OrderRepository;
 

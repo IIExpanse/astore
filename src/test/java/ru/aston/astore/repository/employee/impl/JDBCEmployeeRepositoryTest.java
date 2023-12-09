@@ -6,13 +6,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.aston.astore.connection.ConnectionManager;
-import ru.aston.astore.entity.client.Client;
 import ru.aston.astore.entity.employee.Employee;
 import ru.aston.astore.entity.employee.EmployeeRole;
 import ru.aston.astore.properties.TestProperties;
-import ru.aston.astore.repository.client.ClientRepository;
-import ru.aston.astore.repository.client.impl.JDBCClientRepository;
-import ru.aston.astore.repository.employee.EmployeeRepository;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -21,7 +17,8 @@ import java.sql.SQLException;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class JDBCEmployeeRepositoryTest {
     private JDBCEmployeeRepository repository;
