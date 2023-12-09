@@ -1,0 +1,101 @@
+package ru.aston.astore.repository.client.impl;
+
+import org.h2.jdbcx.JdbcDataSource;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import ru.aston.astore.connection.ConnectionManager;
+import ru.aston.astore.entity.client.Client;
+import ru.aston.astore.properties.TestProperties;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class JDBCClientRepositoryTest {
+    private JDBCClientRepository repository;
+    private static String schema;
+
+    @BeforeAll
+    static void setTestDataSource() throws IOException {
+        JdbcDataSource dataSource = new JdbcDataSource();
+        dataSource.setURL(TestProperties.testDatabaseURL);
+        ConnectionManager.setDataSource(dataSource);
+
+        try (BufferedReader br = new BufferedReader(new FileReader(ConnectionManager.testSchemaPath))) {
+            schema = br.lines().collect(Collectors.joining());
+        }
+    }
+
+    @AfterAll
+    static void clearDataSource() {
+        ConnectionManager.setDataSource(null);
+    }
+
+    @BeforeEach
+    void refresh() throws SQLException {
+        ConnectionManager.getConnection().prepareStatement("DROP ALL OBJECTS").execute();
+        ConnectionManager.getConnection().prepareStatement(schema).execute();
+        repository = new JDBCClientRepository();
+    }
+
+    @Test
+    void addAndFindClient() {
+        Client client = getDefaultClient();
+        Client returnedClient = repository.addClient(client).orElseThrow();
+        assertEquals(client, returnedClient);
+    }
+
+    @Test
+    void findByName() {
+        Client client = getDefaultClient();
+        repository.addClient(client);
+        assertTrue(repository.findByName(client.getFirstName(), client.getLastName())
+                .contains(client));
+        assertTrue(repository.findByName(client.getFirstName(), "")
+                .contains(client));
+        assertTrue(repository.findByName("", client.getLastName())
+                .contains(client));
+        assertTrue(repository.findByName("", client.getLastName().substring(0, 1))
+                .contains(client));
+    }
+
+    @Test
+    void updateClient() {
+        Client client = getDefaultClient();
+        repository.addClient(client);
+        client = Client.builder()
+                .id(client.getId())
+                .firstName("Bob")
+                .lastName("Smith")
+                .build();
+        assertTrue(repository.updateClient(client));
+
+        Client returnedClient = repository.findById(client.getId()).orElseThrow();
+        assertEquals(client.getFirstName(), returnedClient.getFirstName());
+        assertEquals(client.getLastName(), returnedClient.getLastName());
+    }
+
+    @Test
+    void removeClient() {
+        Client client = getDefaultClient();
+        repository.addClient(client);
+        assertTrue(repository.removeClient(client.getId()));
+        assertTrue(repository.findById(client.getId()).isEmpty());
+    }
+
+    private Client getDefaultClient() {
+        return Client.builder()
+                .id(UUID.randomUUID())
+                .firstName("John")
+                .lastName("Doe")
+                .build();
+    }
+}
