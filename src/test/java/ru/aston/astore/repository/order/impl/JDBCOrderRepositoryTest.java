@@ -5,7 +5,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.aston.astore.connection.ConnectionManager;
+import ru.aston.astore.connection.ConnectionPool;
 import ru.aston.astore.entity.client.Client;
 import ru.aston.astore.entity.order.Order;
 import ru.aston.astore.entity.order.OrderStatus;
@@ -18,6 +18,7 @@ import ru.aston.astore.repository.product.impl.JDBCProductRepository;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -39,22 +40,24 @@ class JDBCOrderRepositoryTest {
     static void setTestDataSource() throws IOException {
         JdbcDataSource dataSource = new JdbcDataSource();
         dataSource.setURL(TestProperties.testDatabaseURL);
-        ConnectionManager.setDataSource(dataSource);
+        ConnectionPool.setDataSource(dataSource);
 
-        try (BufferedReader br = new BufferedReader(new FileReader(ConnectionManager.testSchemaPath))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(ConnectionPool.testSchemaPath))) {
             schema = br.lines().collect(Collectors.joining());
         }
     }
 
     @AfterAll
     static void clearDataSource() {
-        ConnectionManager.setDataSource(null);
+        ConnectionPool.clearDataSource();
     }
 
     @BeforeEach
     void refresh() throws SQLException {
-        ConnectionManager.getConnection().prepareStatement("DROP ALL OBJECTS").execute();
-        ConnectionManager.getConnection().prepareStatement(schema).execute();
+        try (Connection con = ConnectionPool.getConnection()) {
+            con.prepareStatement("DROP ALL OBJECTS").execute();
+            con.prepareStatement(schema).execute();
+        }
         orderRepository = new JDBCOrderRepository();
         productRepository = new JDBCProductRepository();
         clientRepository = new JDBCClientRepository();

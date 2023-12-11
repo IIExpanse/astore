@@ -2,7 +2,7 @@ package ru.aston.astore.repository.employee.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.aston.astore.connection.ConnectionManager;
+import ru.aston.astore.connection.ConnectionPool;
 import ru.aston.astore.entity.employee.Employee;
 import ru.aston.astore.entity.employee.EmployeeRole;
 import ru.aston.astore.repository.employee.EmployeeRepository;
@@ -22,8 +22,7 @@ public class JDBCEmployeeRepository implements EmployeeRepository {
 
     @Override
     public Optional<Employee> addEmployee(Employee newEmployee) {
-        Connection con = ConnectionManager.getConnection();
-        try {
+        try (Connection con = ConnectionPool.getConnection()) {
             PreparedStatement ps = con.prepareStatement(
                     "INSERT INTO employees (id, first_name, last_name, role) " +
                             "VALUES (?, ?, ?, ?)");
@@ -44,8 +43,7 @@ public class JDBCEmployeeRepository implements EmployeeRepository {
 
     @Override
     public Optional<Employee> findById(UUID id) {
-        Connection con = ConnectionManager.getConnection();
-        try {
+        try (Connection con = ConnectionPool.getConnection()) {
             PreparedStatement ps = con.prepareStatement(
                     "SELECT * FROM employees WHERE id = ?");
             ps.setObject(1, id);
@@ -64,8 +62,7 @@ public class JDBCEmployeeRepository implements EmployeeRepository {
 
     @Override
     public Collection<Employee> findByName(String firstName, String lastName) {
-        Connection con = ConnectionManager.getConnection();
-        try {
+        try (Connection con = ConnectionPool.getConnection()) {
             PreparedStatement ps = con.prepareStatement(
                     "SELECT * FROM employees WHERE first_name LIKE ? AND last_name LIKE ?");
             ps.setString(1, "%" + firstName + "%");
@@ -88,8 +85,7 @@ public class JDBCEmployeeRepository implements EmployeeRepository {
 
     @Override
     public boolean updateEmployee(Employee updatedEmployee) {
-        Connection con = ConnectionManager.getConnection();
-        try {
+        try (Connection con = ConnectionPool.getConnection()) {
             PreparedStatement ps = con.prepareStatement(
                     "UPDATE employees SET first_name = ?," +
                             "last_name = ?," +
@@ -113,8 +109,7 @@ public class JDBCEmployeeRepository implements EmployeeRepository {
 
     @Override
     public boolean removeEmployee(UUID id) {
-        Connection con = ConnectionManager.getConnection();
-        try {
+        try (Connection con = ConnectionPool.getConnection()) {
             PreparedStatement ps = con.prepareStatement(
                     "DELETE FROM employees WHERE id = ?");
             ps.setObject(1, id);

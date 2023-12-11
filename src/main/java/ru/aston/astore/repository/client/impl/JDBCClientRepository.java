@@ -2,7 +2,7 @@ package ru.aston.astore.repository.client.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.aston.astore.connection.ConnectionManager;
+import ru.aston.astore.connection.ConnectionPool;
 import ru.aston.astore.entity.client.Client;
 import ru.aston.astore.repository.client.ClientRepository;
 
@@ -21,8 +21,7 @@ public class JDBCClientRepository implements ClientRepository {
 
     @Override
     public Optional<Client> addClient(Client newClient) {
-        Connection con = ConnectionManager.getConnection();
-        try {
+        try (Connection con = ConnectionPool.getConnection()) {
             PreparedStatement ps = con.prepareStatement(
                     "INSERT INTO clients (id, first_name, last_name) " +
                             "VALUES (?, ?, ?)");
@@ -30,7 +29,6 @@ public class JDBCClientRepository implements ClientRepository {
             ps.setString(2, newClient.getFirstName());
             ps.setString(3, newClient.getLastName());
             ps.executeUpdate();
-            ps.close();
 
             return findById(newClient.getId());
 
@@ -42,16 +40,13 @@ public class JDBCClientRepository implements ClientRepository {
 
     @Override
     public Optional<Client> findById(UUID id) {
-        Connection con = ConnectionManager.getConnection();
-        try {
+        try (Connection con = ConnectionPool.getConnection()) {
             PreparedStatement ps = con.prepareStatement(
                     "SELECT * FROM clients WHERE id = ?");
             ps.setObject(1, id);
             ResultSet rs = ps.executeQuery();
 
-            Optional<Client> ans = rs.next() ? Optional.of(mapRow(rs)) : Optional.empty();
-            ps.close();
-            return ans;
+            return rs.next() ? Optional.of(mapRow(rs)) : Optional.empty();
 
         } catch (SQLException e) {
             log.debug(String.format("Error while finding a client with id=%s: %s",
@@ -62,8 +57,7 @@ public class JDBCClientRepository implements ClientRepository {
 
     @Override
     public Collection<Client> findByName(String firstName, String lastName) {
-        Connection con = ConnectionManager.getConnection();
-        try {
+        try (Connection con = ConnectionPool.getConnection()) {
             PreparedStatement ps = con.prepareStatement(
                     "SELECT * FROM clients WHERE first_name LIKE ? AND last_name LIKE ?");
             ps.setString(1, "%" + firstName + "%");
@@ -74,7 +68,6 @@ public class JDBCClientRepository implements ClientRepository {
             while (rs.next()) {
                 list.add(mapRow(rs));
             }
-            ps.close();
             return list;
 
         } catch (SQLException e) {
@@ -86,8 +79,7 @@ public class JDBCClientRepository implements ClientRepository {
 
     @Override
     public boolean updateClient(Client updatedClient) {
-        Connection con = ConnectionManager.getConnection();
-        try {
+        try (Connection con = ConnectionPool.getConnection()) {
             PreparedStatement ps = con.prepareStatement(
                     "UPDATE clients SET first_name = ?," +
                             "last_name = ?" +
@@ -96,7 +88,6 @@ public class JDBCClientRepository implements ClientRepository {
             ps.setString(2, updatedClient.getLastName());
             ps.setObject(3, updatedClient.getId());
             int affectedRows = ps.executeUpdate();
-            ps.close();
 
             return affectedRows > 0;
 
@@ -109,13 +100,11 @@ public class JDBCClientRepository implements ClientRepository {
 
     @Override
     public boolean removeClient(UUID id) {
-        Connection con = ConnectionManager.getConnection();
-        try {
+        try (Connection con = ConnectionPool.getConnection()) {
             PreparedStatement ps = con.prepareStatement(
                     "DELETE FROM clients WHERE id = ?");
             ps.setObject(1, id);
             int affectedRows = ps.executeUpdate();
-            ps.close();
 
             return affectedRows > 0;
 

@@ -2,7 +2,7 @@ package ru.aston.astore.repository.product.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.aston.astore.connection.ConnectionManager;
+import ru.aston.astore.connection.ConnectionPool;
 import ru.aston.astore.entity.product.Product;
 import ru.aston.astore.entity.product.ProductType;
 import ru.aston.astore.repository.employee.impl.JDBCEmployeeRepository;
@@ -24,8 +24,7 @@ public class JDBCProductRepository implements ProductRepository {
 
     @Override
     public Optional<Product> addProduct(Product newProduct) {
-        Connection con = ConnectionManager.getConnection();
-        try {
+        try (Connection con = ConnectionPool.getConnection()) {
             PreparedStatement ps = con.prepareStatement(
                     "INSERT INTO products (id, title, price, discount, product_type) " +
                             "VALUES (?, ?, ?, ?, ?)");
@@ -52,8 +51,7 @@ public class JDBCProductRepository implements ProductRepository {
 
     @Override
     public Optional<Product> findById(UUID id) {
-        Connection con = ConnectionManager.getConnection();
-        try {
+        try (Connection con = ConnectionPool.getConnection()) {
             PreparedStatement ps = con.prepareStatement(
                     "SELECT * FROM products WHERE id = ?");
             ps.setObject(1, id);
@@ -72,8 +70,7 @@ public class JDBCProductRepository implements ProductRepository {
 
     @Override
     public Collection<Product> findByTitle(String title) {
-        Connection con = ConnectionManager.getConnection();
-        try {
+        try (Connection con = ConnectionPool.getConnection()) {
             PreparedStatement ps = con.prepareStatement(
                     "SELECT * FROM products WHERE products.title LIKE ?");
             ps.setString(1, "%" + title + "%");
@@ -95,8 +92,7 @@ public class JDBCProductRepository implements ProductRepository {
 
     @Override
     public boolean updateProduct(Product updatedProduct) {
-        Connection con = ConnectionManager.getConnection();
-        try {
+        try (Connection con = ConnectionPool.getConnection()) {
             PreparedStatement ps = con.prepareStatement(
                     "UPDATE products SET title = ?," +
                             "price = ?," +
@@ -128,8 +124,7 @@ public class JDBCProductRepository implements ProductRepository {
 
     @Override
     public boolean removeProduct(UUID id) {
-        Connection con = ConnectionManager.getConnection();
-        try {
+        try (Connection con = ConnectionPool.getConnection()) {
             PreparedStatement ps = con.prepareStatement(
                     "DELETE FROM products WHERE id = ?");
             ps.setObject(1, id);

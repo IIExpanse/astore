@@ -2,7 +2,7 @@ package ru.aston.astore.repository.order.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.aston.astore.connection.ConnectionManager;
+import ru.aston.astore.connection.ConnectionPool;
 import ru.aston.astore.entity.order.Order;
 import ru.aston.astore.entity.order.OrderStatus;
 import ru.aston.astore.repository.client.impl.JDBCClientRepository;
@@ -25,9 +25,7 @@ public class JDBCOrderRepository implements OrderRepository {
 
     @Override
     public Optional<Order> addOrder(Order newOrder) {
-        Connection con = ConnectionManager.getConnection();
-        log.debug("Order added with products: " + newOrder.getProducts());
-        try {
+        try (Connection con = ConnectionPool.getConnection()) {
             PreparedStatement ps = con.prepareStatement(
                     "INSERT INTO orders (id, client_id, manager_id, status, created) " +
                             "VALUES (?, ?, ?, ?, ?)");
@@ -44,7 +42,6 @@ public class JDBCOrderRepository implements OrderRepository {
             ps.executeUpdate();
             ps.close();
             if (!newOrder.getProducts().isEmpty()) {
-                log.debug("Products added");
                 addProductsIntoOrder(newOrder.getProducts(), newOrder.getId());
             }
             return findById(newOrder.getId());
@@ -57,16 +54,15 @@ public class JDBCOrderRepository implements OrderRepository {
 
     @Override
     public boolean addProductsIntoOrder(Collection<UUID> productsIds, UUID orderId) {
-        Connection con = ConnectionManager.getConnection();
-        try {
+        try (Connection con = ConnectionPool.getConnection()) {
             PreparedStatement ps = con.prepareStatement(
                     "MERGE INTO orders_products op " +
                             "USING (SELECT * FROM (VALUES (?, ?)) AS s(order_id, product_id)) AS src " +
                             "ON src.order_id = op.order_id AND src.product_id = op.order_id " +
                             "WHEN MATCHED THEN " +
-                                "UPDATE SET product_amount = product_amount + 1 " +
+                            "UPDATE SET product_amount = product_amount + 1 " +
                             "WHEN NOT MATCHED THEN " +
-                                "INSERT VALUES (?, ?, 1)");
+                            "INSERT VALUES (?, ?, 1)");
 
             for (UUID productsId : productsIds) {
                 ps.setObject(1, orderId);
@@ -90,8 +86,7 @@ public class JDBCOrderRepository implements OrderRepository {
 
     @Override
     public Optional<Order> findById(UUID id) {
-        Connection con = ConnectionManager.getConnection();
-        try {
+        try (Connection con = ConnectionPool.getConnection()) {
             PreparedStatement ps = con.prepareStatement(
                     "SELECT * FROM orders WHERE id = ?");
             ps.setObject(1, id);
@@ -111,8 +106,7 @@ public class JDBCOrderRepository implements OrderRepository {
 
     @Override
     public Collection<UUID> getProductIdsByOrder(UUID id) {
-        Connection con = ConnectionManager.getConnection();
-        try {
+        try (Connection con = ConnectionPool.getConnection()) {
             PreparedStatement ps = con.prepareStatement(
                     "SELECT product_id FROM orders_products WHERE order_id = ?");
             ps.setObject(1, id);
@@ -135,8 +129,7 @@ public class JDBCOrderRepository implements OrderRepository {
 
     @Override
     public Collection<Order> findByStatus(OrderStatus status) {
-        Connection con = ConnectionManager.getConnection();
-        try {
+        try (Connection con = ConnectionPool.getConnection()) {
             PreparedStatement ps = con.prepareStatement(
                     "SELECT * FROM orders WHERE status = ?");
             ps.setString(1, status.toString());
@@ -159,8 +152,7 @@ public class JDBCOrderRepository implements OrderRepository {
 
     @Override
     public boolean updateOrder(Order updatedOrder) {
-        Connection con = ConnectionManager.getConnection();
-        try {
+        try (Connection con = ConnectionPool.getConnection()) {
             PreparedStatement ps = con.prepareStatement(
                     "UPDATE orders SET client_id = ?," +
                             "manager_id = ?," +
@@ -191,8 +183,7 @@ public class JDBCOrderRepository implements OrderRepository {
 
     @Override
     public boolean removeOrder(UUID id) {
-        Connection con = ConnectionManager.getConnection();
-        try {
+        try (Connection con = ConnectionPool.getConnection()) {
             PreparedStatement ps = con.prepareStatement("DELETE FROM orders_products WHERE order_id = ?");
             ps.setObject(1, id);
             ps.executeUpdate();
@@ -213,30 +204,32 @@ public class JDBCOrderRepository implements OrderRepository {
     }
 
     private Order mapRow(ResultSet rs) throws SQLException {
-        UUID id = UUID.fromString(rs.getString(1));
+        UUID orderId = UUID.fromString(rs.getString(1));
+
         return Order.builder()
-                .id(id)
+                .id(orderId)
                 .client_id(UUID.fromString(rs.getString(2)))
                 .assignedManager(rs.getString(3) != null ? UUID.fromString(rs.getString(3)) : null)
                 .status(OrderStatus.valueOf(rs.getString(4)))
                 .created(rs.getTimestamp(5).toLocalDateTime())
-                .products(findOrderProductsIds(id))
+                .products(findOrderProductsIds(orderId))
                 .build();
     }
 
     private Collection<UUID> findOrderProductsIds(UUID id) throws SQLException {
-        Connection con = ConnectionManager.getConnection();
-        List<UUID> list = new ArrayList<>();
-        PreparedStatement ps = con.prepareStatement(
-                "SELECT product_id FROM orders_products WHERE order_id = ?");
-        ps.setObject(1, id);
-        ResultSet rs = ps.executeQuery();
+        try (Connection con = ConnectionPool.getConnection()) {
+            List<UUID> list = new ArrayList<>();
+            PreparedStatement ps = con.prepareStatement(
+                    "SELECT product_id FROM orders_products WHERE order_id = ?");
+            ps.setObject(1, id);
+            ResultSet rs = ps.executeQuery();
 
-        while (rs.next()) {
-            list.add(UUID.fromString(rs.getString(1)));
+            while (rs.next()) {
+                list.add(UUID.fromString(rs.getString(1)));
+            }
+            rs.close();
+
+            return list;
         }
-        rs.close();
-
-        return list;
     }
 }
