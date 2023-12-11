@@ -18,13 +18,19 @@ import java.util.UUID;
 
 @Slf4j
 public class JDBCEmployeeRepository implements EmployeeRepository {
+    private static final String INSERT_EMPLOYEE = "INSERT INTO employees (id, first_name, last_name, role) " +
+            "VALUES (?, ?, ?, ?)";
+    private static final String FIND_EMPLOYEE_BI_ID = "SELECT * FROM employees WHERE id = ?";
+    private static final String FIND_EMPLOYEE_BI_NAME = "SELECT * FROM employees " +
+            "WHERE first_name LIKE ? AND last_name LIKE ?";
+    private static final String UPDATE_EMPLOYEE = "UPDATE employees SET first_name = ?, last_name = ?, role = ? " +
+            "WHERE id = ?";
+    private static final String DELETE_EMPLOYEE = "DELETE FROM employees WHERE id = ?";
 
     @Override
     public Optional<Employee> addEmployee(Employee newEmployee) {
         try (Connection con = ConnectionPool.getConnection()) {
-            PreparedStatement ps = con.prepareStatement(
-                    "INSERT INTO employees (id, first_name, last_name, role) " +
-                            "VALUES (?, ?, ?, ?)");
+            PreparedStatement ps = con.prepareStatement(INSERT_EMPLOYEE);
             ps.setObject(1, newEmployee.getId());
             ps.setString(2, newEmployee.getFirstName());
             ps.setString(3, newEmployee.getLastName());
@@ -43,8 +49,7 @@ public class JDBCEmployeeRepository implements EmployeeRepository {
     @Override
     public Optional<Employee> findById(UUID id) {
         try (Connection con = ConnectionPool.getConnection()) {
-            PreparedStatement ps = con.prepareStatement(
-                    "SELECT * FROM employees WHERE id = ?");
+            PreparedStatement ps = con.prepareStatement(FIND_EMPLOYEE_BI_ID);
             ps.setObject(1, id);
             ResultSet rs = ps.executeQuery();
 
@@ -62,8 +67,7 @@ public class JDBCEmployeeRepository implements EmployeeRepository {
     @Override
     public Collection<Employee> findByName(String firstName, String lastName) {
         try (Connection con = ConnectionPool.getConnection()) {
-            PreparedStatement ps = con.prepareStatement(
-                    "SELECT * FROM employees WHERE first_name LIKE ? AND last_name LIKE ?");
+            PreparedStatement ps = con.prepareStatement(FIND_EMPLOYEE_BI_NAME);
             ps.setString(1, "%" + firstName + "%");
             ps.setString(2, "%" + lastName + "%");
             ResultSet rs = ps.executeQuery();
@@ -85,11 +89,7 @@ public class JDBCEmployeeRepository implements EmployeeRepository {
     @Override
     public boolean updateEmployee(Employee updatedEmployee) {
         try (Connection con = ConnectionPool.getConnection()) {
-            PreparedStatement ps = con.prepareStatement(
-                    "UPDATE employees SET first_name = ?," +
-                            "last_name = ?," +
-                            "role = ?" +
-                            "WHERE id = ?");
+            PreparedStatement ps = con.prepareStatement(UPDATE_EMPLOYEE);
             ps.setString(1, updatedEmployee.getFirstName());
             ps.setString(2, updatedEmployee.getLastName());
             ps.setString(3, updatedEmployee.getRole().toString());
@@ -109,8 +109,7 @@ public class JDBCEmployeeRepository implements EmployeeRepository {
     @Override
     public boolean removeEmployee(UUID id) {
         try (Connection con = ConnectionPool.getConnection()) {
-            PreparedStatement ps = con.prepareStatement(
-                    "DELETE FROM employees WHERE id = ?");
+            PreparedStatement ps = con.prepareStatement(DELETE_EMPLOYEE);
             ps.setObject(1, id);
             int affectedRows = ps.executeUpdate();
             ps.close();

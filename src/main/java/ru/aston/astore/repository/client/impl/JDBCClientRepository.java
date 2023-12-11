@@ -17,13 +17,18 @@ import java.util.UUID;
 
 @Slf4j
 public class JDBCClientRepository implements ClientRepository {
+    private static final String INSERT_CLIENT = "INSERT INTO clients (id, first_name, last_name) VALUES (?, ?, ?)";
+    private static final String FIND_CLIENT_BY_ID = "SELECT * FROM clients WHERE id = ?";
+    private static final String FIND_CLIENTS_BY_NAME = "SELECT * FROM clients " +
+            "WHERE first_name LIKE ? AND last_name LIKE ?";
+    private static final String UPDATE_CLIENT = "UPDATE clients SET first_name = ?, last_name = ? " +
+            "WHERE id = ?";
+    private static final String DELETE_CLIENT = "DELETE FROM clients WHERE id = ?";
 
     @Override
     public Optional<Client> addClient(Client newClient) {
         try (Connection con = ConnectionPool.getConnection()) {
-            PreparedStatement ps = con.prepareStatement(
-                    "INSERT INTO clients (id, first_name, last_name) " +
-                            "VALUES (?, ?, ?)");
+            PreparedStatement ps = con.prepareStatement(INSERT_CLIENT);
             ps.setObject(1, newClient.getId());
             ps.setString(2, newClient.getFirstName());
             ps.setString(3, newClient.getLastName());
@@ -40,8 +45,7 @@ public class JDBCClientRepository implements ClientRepository {
     @Override
     public Optional<Client> findById(UUID id) {
         try (Connection con = ConnectionPool.getConnection()) {
-            PreparedStatement ps = con.prepareStatement(
-                    "SELECT * FROM clients WHERE id = ?");
+            PreparedStatement ps = con.prepareStatement(FIND_CLIENT_BY_ID);
             ps.setObject(1, id);
             ResultSet rs = ps.executeQuery();
 
@@ -57,8 +61,7 @@ public class JDBCClientRepository implements ClientRepository {
     @Override
     public Collection<Client> findByName(String firstName, String lastName) {
         try (Connection con = ConnectionPool.getConnection()) {
-            PreparedStatement ps = con.prepareStatement(
-                    "SELECT * FROM clients WHERE first_name LIKE ? AND last_name LIKE ?");
+            PreparedStatement ps = con.prepareStatement(FIND_CLIENTS_BY_NAME);
             ps.setString(1, "%" + firstName + "%");
             ps.setString(2, "%" + lastName + "%");
             ResultSet rs = ps.executeQuery();
@@ -79,10 +82,7 @@ public class JDBCClientRepository implements ClientRepository {
     @Override
     public boolean updateClient(Client updatedClient) {
         try (Connection con = ConnectionPool.getConnection()) {
-            PreparedStatement ps = con.prepareStatement(
-                    "UPDATE clients SET first_name = ?," +
-                            "last_name = ?" +
-                            "WHERE id = ?");
+            PreparedStatement ps = con.prepareStatement(UPDATE_CLIENT);
             ps.setString(1, updatedClient.getFirstName());
             ps.setString(2, updatedClient.getLastName());
             ps.setObject(3, updatedClient.getId());
@@ -100,8 +100,7 @@ public class JDBCClientRepository implements ClientRepository {
     @Override
     public boolean removeClient(UUID id) {
         try (Connection con = ConnectionPool.getConnection()) {
-            PreparedStatement ps = con.prepareStatement(
-                    "DELETE FROM clients WHERE id = ?");
+            PreparedStatement ps = con.prepareStatement(DELETE_CLIENT);
             ps.setObject(1, id);
             int affectedRows = ps.executeUpdate();
 

@@ -19,13 +19,19 @@ import java.util.UUID;
 
 @Slf4j
 public class JDBCProductRepository implements ProductRepository {
+    private static final String INSERT_PRODUCT = "INSERT INTO products (id, title, price, discount, product_type) " +
+            "VALUES (?, ?, ?, ?, ?)";
+    private static final String FIND_PRODUCT_BY_ID = "SELECT * FROM products WHERE id = ?";
+    private static final String FIND_PRODUCTS_BY_TITLE = "SELECT * FROM products WHERE products.title LIKE ?";
+    private static final String UPDATE_PRODUCT = "UPDATE products SET title = ?, price = ?, discount = ?, " +
+            "product_type = ? " +
+            "WHERE id = ?";
+    private static final String DELETE_PRODUCT = "DELETE FROM products WHERE id = ?";
 
     @Override
     public Optional<Product> addProduct(Product newProduct) {
         try (Connection con = ConnectionPool.getConnection()) {
-            PreparedStatement ps = con.prepareStatement(
-                    "INSERT INTO products (id, title, price, discount, product_type) " +
-                            "VALUES (?, ?, ?, ?, ?)");
+            PreparedStatement ps = con.prepareStatement(INSERT_PRODUCT);
             ps.setObject(1, newProduct.getId());
             ps.setString(2, newProduct.getTitle());
             ps.setFloat(3, newProduct.getPrice());
@@ -50,8 +56,7 @@ public class JDBCProductRepository implements ProductRepository {
     @Override
     public Optional<Product> findById(UUID id) {
         try (Connection con = ConnectionPool.getConnection()) {
-            PreparedStatement ps = con.prepareStatement(
-                    "SELECT * FROM products WHERE id = ?");
+            PreparedStatement ps = con.prepareStatement(FIND_PRODUCT_BY_ID);
             ps.setObject(1, id);
             ResultSet rs = ps.executeQuery();
 
@@ -69,8 +74,7 @@ public class JDBCProductRepository implements ProductRepository {
     @Override
     public Collection<Product> findByTitle(String title) {
         try (Connection con = ConnectionPool.getConnection()) {
-            PreparedStatement ps = con.prepareStatement(
-                    "SELECT * FROM products WHERE products.title LIKE ?");
+            PreparedStatement ps = con.prepareStatement(FIND_PRODUCTS_BY_TITLE);
             ps.setString(1, "%" + title + "%");
             ResultSet rs = ps.executeQuery();
 
@@ -91,12 +95,7 @@ public class JDBCProductRepository implements ProductRepository {
     @Override
     public boolean updateProduct(Product updatedProduct) {
         try (Connection con = ConnectionPool.getConnection()) {
-            PreparedStatement ps = con.prepareStatement(
-                    "UPDATE products SET title = ?," +
-                            "price = ?," +
-                            "discount = ?," +
-                            "product_type = ?" +
-                            "WHERE id = ?");
+            PreparedStatement ps = con.prepareStatement(UPDATE_PRODUCT);
             ps.setString(1, updatedProduct.getTitle());
             ps.setFloat(2, updatedProduct.getPrice());
             ps.setString(4, updatedProduct.getType().toString());
@@ -123,8 +122,7 @@ public class JDBCProductRepository implements ProductRepository {
     @Override
     public boolean removeProduct(UUID id) {
         try (Connection con = ConnectionPool.getConnection()) {
-            PreparedStatement ps = con.prepareStatement(
-                    "DELETE FROM products WHERE id = ?");
+            PreparedStatement ps = con.prepareStatement(DELETE_PRODUCT);
             ps.setObject(1, id);
             int affectedRows = ps.executeUpdate();
             ps.close();
