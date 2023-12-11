@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.mapstruct.factory.Mappers;
+import ru.aston.astore.controller.ControllerUtils;
 import ru.aston.astore.dto.employee.EmployeeDto;
 import ru.aston.astore.dto.employee.NewEmployeeDto;
 import ru.aston.astore.mapper.employee.EmployeeMapper;
@@ -15,7 +16,6 @@ import ru.aston.astore.service.employee.EmployeeService;
 import ru.aston.astore.service.employee.impl.EmployeeServiceImpl;
 
 import java.io.IOException;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -71,13 +71,11 @@ public class EmployeeController extends HttpServlet {
             ans = dto.get();
 
         } else {
-            String firstName = Objects.requireNonNullElse(req.getParameter("firstName"), "");
-            String lastName = Objects.requireNonNullElse(req.getParameter("lastName"), "");
-            if (firstName.isBlank() && lastName.isBlank()) {
-                resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Query is missing required parameters.");
+            Optional<String[]> nameOptional = ControllerUtils.getNamesIfPresent(req, resp);
+            if (nameOptional.isEmpty()) {
                 return;
             }
-            ans = service.findByName(firstName, lastName);
+            ans = service.findByName(nameOptional.get()[0], nameOptional.get()[1]);
         }
         resp.getWriter().write(mapper.writeValueAsString(ans));
         resp.getWriter().flush();

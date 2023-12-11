@@ -1,7 +1,6 @@
 package ru.aston.astore.controller.order;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -38,7 +37,6 @@ public class OrderController extends HttpServlet {
         this.service = service;
         this.mapper = new ObjectMapper();
         mapper.findAndRegisterModules();
-        mapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
     }
 
     @Override
