@@ -7,6 +7,7 @@ import lombok.Setter;
 import ru.aston.astore.entity.EmployeeRole;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -27,11 +28,20 @@ public class EmployeeDto {
 
         EmployeeDto that = (EmployeeDto) o;
 
-        return id.equals(that.id);
+        if (!Objects.equals(id, that.id)) return false;
+        if (!Objects.equals(firstName, that.firstName)) return false;
+        if (!Objects.equals(lastName, that.lastName)) return false;
+        if (role != that.role) return false;
+        return Objects.equals(assignedOrders, that.assignedOrders);
     }
 
     @Override
     public int hashCode() {
-        return id.hashCode();
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (firstName != null ? firstName.hashCode() : 0);
+        result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
+        result = 31 * result + (role != null ? role.hashCode() : 0);
+        result = 31 * result + (assignedOrders != null ? assignedOrders.hashCode() : 0);
+        return result;
     }
 }

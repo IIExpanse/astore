@@ -13,6 +13,7 @@ public interface ClientMapper {
     Client mapToEntity(ClientDto dto);
 
     @Mapping(target = "madeOrders", ignore = true)
+    @Mapping(target = "id", source = "id")
     Client mapToEntity(ClientDto dto, UUID id);
 
     ClientDto mapToDto(Client client);

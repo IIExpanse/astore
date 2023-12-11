@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -25,11 +26,18 @@ public class ClientDto {
 
         ClientDto clientDto = (ClientDto) o;
 
-        return id.equals(clientDto.id);
+        if (!Objects.equals(id, clientDto.id)) return false;
+        if (!Objects.equals(firstName, clientDto.firstName)) return false;
+        if (!Objects.equals(lastName, clientDto.lastName)) return false;
+        return Objects.equals(madeOrders, clientDto.madeOrders);
     }
 
     @Override
     public int hashCode() {
-        return id.hashCode();
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (firstName != null ? firstName.hashCode() : 0);
+        result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
+        result = 31 * result + (madeOrders != null ? madeOrders.hashCode() : 0);
+        return result;
     }
 }

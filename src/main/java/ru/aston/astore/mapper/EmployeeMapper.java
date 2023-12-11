@@ -13,6 +13,7 @@ public interface EmployeeMapper {
     Employee mapToEntity(EmployeeDto dto);
 
     @Mapping(target = "assignedOrders", ignore = true)
+    @Mapping(target = "id", source = "id")
     Employee mapToEntity(EmployeeDto dto, UUID id);
 
     EmployeeDto mapToDto(Employee employee);
