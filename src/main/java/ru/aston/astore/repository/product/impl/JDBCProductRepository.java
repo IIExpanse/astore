@@ -1,11 +1,9 @@
 package ru.aston.astore.repository.product.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import ru.aston.astore.connection.ConnectionPool;
 import ru.aston.astore.entity.product.Product;
 import ru.aston.astore.entity.product.ProductType;
-import ru.aston.astore.repository.employee.impl.JDBCEmployeeRepository;
 import ru.aston.astore.repository.product.ProductRepository;
 
 import java.sql.Connection;
@@ -19,8 +17,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Slf4j
 public class JDBCProductRepository implements ProductRepository {
-    private static final Logger log = LoggerFactory.getLogger(JDBCEmployeeRepository.class);
 
     @Override
     public Optional<Product> addProduct(Product newProduct) {

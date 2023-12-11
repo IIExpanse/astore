@@ -1,7 +1,6 @@
 package ru.aston.astore.repository.employee.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import ru.aston.astore.connection.ConnectionPool;
 import ru.aston.astore.entity.employee.Employee;
 import ru.aston.astore.entity.employee.EmployeeRole;
@@ -17,8 +16,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Slf4j
 public class JDBCEmployeeRepository implements EmployeeRepository {
-    private static final Logger log = LoggerFactory.getLogger(JDBCEmployeeRepository.class);
 
     @Override
     public Optional<Employee> addEmployee(Employee newEmployee) {
