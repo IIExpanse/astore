@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.mapstruct.factory.Mappers;
+import ru.aston.astore.controller.ControllerUtils;
 import ru.aston.astore.dto.product.NewProductDto;
 import ru.aston.astore.dto.product.ProductDto;
 import ru.aston.astore.mapper.product.ProductMapper;
@@ -57,7 +58,7 @@ public class ProductController extends HttpServlet {
         Object ans;
 
         if (id != null) {
-            Optional<UUID> uuid = tryParseId(id);
+            Optional<UUID> uuid = ControllerUtils.tryParseId(id);
             if (uuid.isEmpty()) {
                 resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid product ID.");
                 return;
@@ -113,7 +114,7 @@ public class ProductController extends HttpServlet {
             return;
         }
 
-        Optional<UUID> uuid = tryParseId(id);
+        Optional<UUID> uuid = ControllerUtils.tryParseId(id);
         if (uuid.isEmpty()) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid product ID.");
             return;
@@ -124,15 +125,5 @@ public class ProductController extends HttpServlet {
             return;
         }
         resp.setStatus(HttpServletResponse.SC_OK);
-    }
-
-    private Optional<UUID> tryParseId(String id) {
-        UUID uuid;
-        try {
-            uuid = UUID.fromString(id);
-        } catch (IllegalArgumentException e) {
-            return Optional.empty();
-        }
-        return Optional.of(uuid);
     }
 }

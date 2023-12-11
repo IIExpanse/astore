@@ -57,7 +57,7 @@ public class EmployeeController extends HttpServlet {
         Object ans;
 
         if (id != null) {
-            Optional<UUID> uuid = tryParseId(id);
+            Optional<UUID> uuid = ControllerUtils.tryParseId(id);
             if (uuid.isEmpty()) {
                 resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid employee ID.");
                 return;
@@ -112,7 +112,7 @@ public class EmployeeController extends HttpServlet {
             return;
         }
 
-        Optional<UUID> uuid = tryParseId(id);
+        Optional<UUID> uuid = ControllerUtils.tryParseId(id);
         if (uuid.isEmpty()) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid employee ID.");
             return;
@@ -123,15 +123,5 @@ public class EmployeeController extends HttpServlet {
             return;
         }
         resp.setStatus(HttpServletResponse.SC_OK);
-    }
-
-    private Optional<UUID> tryParseId(String id) {
-        UUID uuid;
-        try {
-            uuid = UUID.fromString(id);
-        } catch (IllegalArgumentException e) {
-            return Optional.empty();
-        }
-        return Optional.of(uuid);
     }
 }

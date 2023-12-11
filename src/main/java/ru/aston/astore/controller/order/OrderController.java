@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.mapstruct.factory.Mappers;
+import ru.aston.astore.controller.ControllerUtils;
 import ru.aston.astore.dto.order.NewOrderDto;
 import ru.aston.astore.dto.order.OrderDto;
 import ru.aston.astore.entity.order.OrderStatus;
@@ -72,7 +73,7 @@ public class OrderController extends HttpServlet {
             Object ans;
 
             if (id != null) {
-                Optional<UUID> uuid = tryParseId(id);
+                Optional<UUID> uuid = ControllerUtils.tryParseId(id);
                 if (uuid.isEmpty()) {
                     resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid order ID.");
                     return;
@@ -111,7 +112,7 @@ public class OrderController extends HttpServlet {
             }
             UUID orderUuid;
 
-            Optional<UUID> orderUuidOptional = tryParseId(orderId);
+            Optional<UUID> orderUuidOptional = ControllerUtils.tryParseId(orderId);
             if (orderUuidOptional.isEmpty()) {
                 resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Query is missing required parameters.");
                 return;
@@ -159,7 +160,7 @@ public class OrderController extends HttpServlet {
             UUID orderUuid;
             Collection<UUID> products;
 
-            Optional<UUID> orderUuidOptional = tryParseId(orderId);
+            Optional<UUID> orderUuidOptional = ControllerUtils.tryParseId(orderId);
             if (orderUuidOptional.isEmpty()) {
                 resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Query is missing required parameters.");
                 return;
@@ -193,7 +194,7 @@ public class OrderController extends HttpServlet {
             return;
         }
 
-        Optional<UUID> uuid = tryParseId(id);
+        Optional<UUID> uuid = ControllerUtils.tryParseId(id);
         if (uuid.isEmpty()) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid order ID.");
             return;
@@ -203,16 +204,7 @@ public class OrderController extends HttpServlet {
             resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Requested order not found.");
             return;
         }
-        resp.setStatus(HttpServletResponse.SC_OK);    }
-
-    private Optional<UUID> tryParseId(String id) {
-        UUID uuid;
-        try {
-            uuid = UUID.fromString(id);
-        } catch (IllegalArgumentException e) {
-            return Optional.empty();
-        }
-        return Optional.of(uuid);
+        resp.setStatus(HttpServletResponse.SC_OK);
     }
 
     private Optional<OrderStatus> tryParseStatus(String s) {
