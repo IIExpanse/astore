@@ -1,7 +1,6 @@
 package ru.aston.astore.service.order.impl;
 
 import lombok.RequiredArgsConstructor;
-import ru.aston.astore.dto.order.NewOrderDto;
 import ru.aston.astore.dto.order.OrderDto;
 import ru.aston.astore.entity.order.Order;
 import ru.aston.astore.entity.order.OrderStatus;
@@ -21,7 +20,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderMapper mapper;
 
     @Override
-    public OrderDto addOrder(NewOrderDto newOrder) {
+    public OrderDto addOrder(OrderDto newOrder) {
         Optional<Order> order = repository.addOrder(
                 mapper.mapToEntity(
                         newOrder,

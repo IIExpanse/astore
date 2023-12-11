@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
-import ru.aston.astore.dto.order.NewOrderDto;
+import ru.aston.astore.dto.order.OrderDto;
 import ru.aston.astore.entity.order.Order;
 import ru.aston.astore.entity.order.OrderStatus;
 import ru.aston.astore.mapper.order.OrderMapper;
@@ -34,7 +34,7 @@ class OrderServiceImplTest {
 
     @Test
     void addOrder() {
-        NewOrderDto dto = getNewOrderDto();
+        OrderDto dto = getNewOrderDto();
         Order order = getDefaultOrder();
 
         Mockito.when(repository.addOrder(ArgumentMatchers.any(Order.class))).thenReturn(Optional.of(order));
@@ -97,8 +97,8 @@ class OrderServiceImplTest {
                 .build();
     }
 
-    private NewOrderDto getNewOrderDto() {
-        NewOrderDto dto = new NewOrderDto();
+    private OrderDto getNewOrderDto() {
+        OrderDto dto = new OrderDto();
         dto.setClient_id(UUID.randomUUID());
         dto.setStatus(OrderStatus.PENDING);
         dto.setProducts(List.of(UUID.randomUUID()));

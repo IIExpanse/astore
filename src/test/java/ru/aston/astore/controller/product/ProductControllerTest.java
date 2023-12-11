@@ -8,7 +8,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
-import ru.aston.astore.dto.product.NewProductDto;
 import ru.aston.astore.dto.product.ProductDto;
 import ru.aston.astore.entity.product.ProductType;
 import ru.aston.astore.service.product.ProductService;
@@ -49,11 +48,11 @@ class ProductControllerTest {
 
         Mockito.when(request.getReader()).thenReturn(getReader(json));
         Mockito.when(response.getWriter()).thenReturn(new PrintWriter(writer));
-        Mockito.when(service.addProduct(ArgumentMatchers.any(NewProductDto.class))).thenReturn(dto);
+        Mockito.when(service.addProduct(ArgumentMatchers.any(ProductDto.class))).thenReturn(dto);
         controller.doPost(request, response);
 
         Mockito.verify(response).setStatus(HttpServletResponse.SC_CREATED);
-        Mockito.verify(service).addProduct(mapper.readValue(json, NewProductDto.class));
+        Mockito.verify(service).addProduct(mapper.readValue(json, ProductDto.class));
         assertEquals(mapper.writeValueAsString(dto), writer.toString());
     }
 
@@ -118,11 +117,6 @@ class ProductControllerTest {
     }
 
     private String getNewProductJson() throws JsonProcessingException {
-        NewProductDto dto = new NewProductDto();
-        dto.setTitle("Wooden chair");
-        dto.setPrice(14.5f);
-        dto.setType(ProductType.FURNITURE);
-
-        return mapper.writeValueAsString(dto);
+        return mapper.writeValueAsString(getProductDto());
     }
 }

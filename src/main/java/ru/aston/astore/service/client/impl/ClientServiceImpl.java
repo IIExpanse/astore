@@ -2,7 +2,6 @@ package ru.aston.astore.service.client.impl;
 
 import lombok.RequiredArgsConstructor;
 import ru.aston.astore.dto.client.ClientDto;
-import ru.aston.astore.dto.client.NewClientDto;
 import ru.aston.astore.entity.client.Client;
 import ru.aston.astore.mapper.client.ClientMapper;
 import ru.aston.astore.repository.client.ClientRepository;
@@ -18,7 +17,7 @@ public class ClientServiceImpl implements ru.aston.astore.service.client.ClientS
     private final ClientMapper mapper;
 
     @Override
-    public ClientDto addClient(NewClientDto newClient) {
+    public ClientDto addClient(ClientDto newClient) {
         Optional<Client> client = repository.addClient(mapper.mapToEntity(newClient, UUID.randomUUID()));
         if (client.isEmpty()) {
             throw new RuntimeException("Error while adding new client: " + newClient.toString());

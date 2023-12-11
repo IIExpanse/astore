@@ -2,7 +2,6 @@ package ru.aston.astore.service.employee.impl;
 
 import lombok.RequiredArgsConstructor;
 import ru.aston.astore.dto.employee.EmployeeDto;
-import ru.aston.astore.dto.employee.NewEmployeeDto;
 import ru.aston.astore.entity.employee.Employee;
 import ru.aston.astore.mapper.employee.EmployeeMapper;
 import ru.aston.astore.repository.employee.EmployeeRepository;
@@ -19,7 +18,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final EmployeeMapper mapper;
 
     @Override
-    public EmployeeDto addEmployee(NewEmployeeDto newEmployee) {
+    public EmployeeDto addEmployee(EmployeeDto newEmployee) {
         Optional<Employee> employee = repository.addEmployee(mapper.mapToEntity(newEmployee, UUID.randomUUID()));
         if (employee.isEmpty()) {
             throw new RuntimeException("Error while adding new client: " + newEmployee.toString());

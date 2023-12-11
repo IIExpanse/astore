@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.mapstruct.factory.Mappers;
 import ru.aston.astore.controller.ControllerUtils;
 import ru.aston.astore.dto.client.ClientDto;
-import ru.aston.astore.dto.client.NewClientDto;
 import ru.aston.astore.mapper.client.ClientMapper;
 import ru.aston.astore.repository.client.impl.JDBCClientRepository;
 import ru.aston.astore.service.client.ClientService;
@@ -37,10 +36,10 @@ public class ClientController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        NewClientDto dto;
+        ClientDto dto;
         try {
             dto = mapper.readValue(
-                    req.getReader().lines().collect(Collectors.joining()), NewClientDto.class);
+                    req.getReader().lines().collect(Collectors.joining()), ClientDto.class);
 
         } catch (JsonProcessingException e) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid request body.");

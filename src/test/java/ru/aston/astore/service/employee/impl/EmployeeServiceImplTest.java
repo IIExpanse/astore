@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
-import ru.aston.astore.dto.employee.NewEmployeeDto;
+import ru.aston.astore.dto.employee.EmployeeDto;
 import ru.aston.astore.entity.employee.Employee;
 import ru.aston.astore.entity.employee.EmployeeRole;
 import ru.aston.astore.mapper.employee.EmployeeMapper;
@@ -33,7 +33,7 @@ class EmployeeServiceImplTest {
 
     @Test
     void addEmployee() {
-        NewEmployeeDto dto = getNewEmployeeDto();
+        EmployeeDto dto = getNewEmployeeDto();
         Employee employee = getDefaultEmployee();
 
         Mockito.when(repository.addEmployee(ArgumentMatchers.any(Employee.class))).thenReturn(Optional.of(employee));
@@ -42,7 +42,7 @@ class EmployeeServiceImplTest {
 
     @Test
     void throwsExceptionForEmptyAddedReturn() {
-        NewEmployeeDto dto = getNewEmployeeDto();
+        EmployeeDto dto = getNewEmployeeDto();
 
         Mockito.when(repository.addEmployee(ArgumentMatchers.any(Employee.class))).thenReturn(Optional.empty());
         assertThrows(RuntimeException.class, () -> service.addEmployee(dto));
@@ -79,8 +79,8 @@ class EmployeeServiceImplTest {
         assertTrue(service.removeEmployee(UUID.randomUUID()));
     }
 
-    private NewEmployeeDto getNewEmployeeDto() {
-        NewEmployeeDto dto = new NewEmployeeDto();
+    private EmployeeDto getNewEmployeeDto() {
+        EmployeeDto dto = new EmployeeDto();
         dto.setFirstName("John");
         dto.setLastName("Doe");
         dto.setRole(EmployeeRole.MANAGER);

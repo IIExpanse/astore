@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.mapstruct.factory.Mappers;
 import ru.aston.astore.controller.ControllerUtils;
 import ru.aston.astore.dto.employee.EmployeeDto;
-import ru.aston.astore.dto.employee.NewEmployeeDto;
 import ru.aston.astore.mapper.employee.EmployeeMapper;
 import ru.aston.astore.repository.employee.impl.JDBCEmployeeRepository;
 import ru.aston.astore.service.employee.EmployeeService;
@@ -37,10 +36,10 @@ public class EmployeeController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        NewEmployeeDto dto;
+        EmployeeDto dto;
         try {
             dto = mapper.readValue(
-                    req.getReader().lines().collect(Collectors.joining()), NewEmployeeDto.class);
+                    req.getReader().lines().collect(Collectors.joining()), EmployeeDto.class);
 
         } catch (JsonProcessingException e) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid request body.");

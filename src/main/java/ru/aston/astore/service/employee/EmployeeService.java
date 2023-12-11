@@ -1,14 +1,13 @@
 package ru.aston.astore.service.employee;
 
 import ru.aston.astore.dto.employee.EmployeeDto;
-import ru.aston.astore.dto.employee.NewEmployeeDto;
 
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
 public interface EmployeeService {
-    EmployeeDto addEmployee(NewEmployeeDto newEmployee);
+    EmployeeDto addEmployee(EmployeeDto newEmployee);
 
     Optional<EmployeeDto> findById(UUID id);
 

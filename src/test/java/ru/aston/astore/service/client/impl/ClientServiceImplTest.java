@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
-import ru.aston.astore.dto.client.NewClientDto;
+import ru.aston.astore.dto.client.ClientDto;
 import ru.aston.astore.entity.client.Client;
 import ru.aston.astore.mapper.client.ClientMapper;
 import ru.aston.astore.repository.client.ClientRepository;
@@ -32,7 +32,7 @@ class ClientServiceImplTest {
 
     @Test
     void addClient() {
-        NewClientDto dto = getNewClientDto();
+        ClientDto dto = getClientDto();
         Client client = getDefaultClient();
 
         Mockito.when(repository.addClient(ArgumentMatchers.any(Client.class))).thenReturn(Optional.of(client));
@@ -41,7 +41,7 @@ class ClientServiceImplTest {
 
     @Test
     void throwsExceptionForEmptyAddedReturn() {
-        NewClientDto dto = getNewClientDto();
+        ClientDto dto = getClientDto();
 
         Mockito.when(repository.addClient(ArgumentMatchers.any(Client.class))).thenReturn(Optional.empty());
         assertThrows(RuntimeException.class, () -> service.addClient(dto));
@@ -86,8 +86,8 @@ class ClientServiceImplTest {
                 .build();
     }
 
-    private NewClientDto getNewClientDto() {
-        NewClientDto dto = new NewClientDto();
+    private ClientDto getClientDto() {
+        ClientDto dto = new ClientDto();
         dto.setFirstName("John");
         dto.setLastName("Doe");
 

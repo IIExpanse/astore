@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import ru.aston.astore.dto.employee.EmployeeDto;
-import ru.aston.astore.dto.employee.NewEmployeeDto;
 import ru.aston.astore.entity.employee.EmployeeRole;
 import ru.aston.astore.service.employee.EmployeeService;
 
@@ -49,11 +48,11 @@ class EmployeeControllerTest {
 
         Mockito.when(request.getReader()).thenReturn(getReader(json));
         Mockito.when(response.getWriter()).thenReturn(new PrintWriter(writer));
-        Mockito.when(service.addEmployee(ArgumentMatchers.any(NewEmployeeDto.class))).thenReturn(dto);
+        Mockito.when(service.addEmployee(ArgumentMatchers.any(EmployeeDto.class))).thenReturn(dto);
         controller.doPost(request, response);
 
         Mockito.verify(response).setStatus(HttpServletResponse.SC_CREATED);
-        Mockito.verify(service).addEmployee(mapper.readValue(json, NewEmployeeDto.class));
+        Mockito.verify(service).addEmployee(mapper.readValue(json, EmployeeDto.class));
         assertEquals(mapper.writeValueAsString(dto), writer.toString());
     }
 
@@ -119,11 +118,6 @@ class EmployeeControllerTest {
     }
 
     private String getNewEmployeeJson() throws JsonProcessingException {
-        NewEmployeeDto dto = new NewEmployeeDto();
-        dto.setFirstName("John");
-        dto.setLastName("Doe");
-        dto.setRole(EmployeeRole.MANAGER);
-
-        return mapper.writeValueAsString(dto);
+        return mapper.writeValueAsString(getEmployeeDto());
     }
 }

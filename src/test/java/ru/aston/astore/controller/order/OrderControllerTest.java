@@ -8,7 +8,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
-import ru.aston.astore.dto.order.NewOrderDto;
 import ru.aston.astore.dto.order.OrderDto;
 import ru.aston.astore.entity.order.OrderStatus;
 import ru.aston.astore.service.order.OrderService;
@@ -51,11 +50,11 @@ class OrderControllerTest {
 
         Mockito.when(request.getReader()).thenReturn(getReader(json));
         Mockito.when(response.getWriter()).thenReturn(new PrintWriter(writer));
-        Mockito.when(service.addOrder(ArgumentMatchers.any(NewOrderDto.class))).thenReturn(dto);
+        Mockito.when(service.addOrder(ArgumentMatchers.any(OrderDto.class))).thenReturn(dto);
         controller.doPost(request, response);
 
         Mockito.verify(response).setStatus(HttpServletResponse.SC_CREATED);
-        Mockito.verify(service).addOrder(mapper.readValue(json, NewOrderDto.class));
+        Mockito.verify(service).addOrder(mapper.readValue(json, OrderDto.class));
         assertEquals(mapper.writeValueAsString(dto), writer.toString());
     }
 
@@ -153,11 +152,6 @@ class OrderControllerTest {
     }
 
     private String getNewOrderJson() throws JsonProcessingException {
-        NewOrderDto dto = new NewOrderDto();
-        dto.setClient_id(UUID.randomUUID());
-        dto.setStatus(OrderStatus.PENDING);
-        dto.setProducts(List.of(UUID.randomUUID()));
-
-        return mapper.writeValueAsString(dto);
+        return mapper.writeValueAsString(getOrderDto());
     }
 }

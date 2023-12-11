@@ -1,7 +1,6 @@
 package ru.aston.astore.service.product.impl;
 
 import lombok.RequiredArgsConstructor;
-import ru.aston.astore.dto.product.NewProductDto;
 import ru.aston.astore.dto.product.ProductDto;
 import ru.aston.astore.entity.product.Product;
 import ru.aston.astore.mapper.product.ProductMapper;
@@ -19,7 +18,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductMapper mapper;
 
     @Override
-    public ProductDto addProduct(NewProductDto newProduct) {
+    public ProductDto addProduct(ProductDto newProduct) {
         Optional<Product> product = repository.addProduct(mapper.mapToEntity(newProduct, UUID.randomUUID()));
         if (product.isEmpty()) {
             throw new RuntimeException("Error while adding new client: " + newProduct.toString());

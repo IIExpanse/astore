@@ -1,6 +1,5 @@
 package ru.aston.astore.service.order;
 
-import ru.aston.astore.dto.order.NewOrderDto;
 import ru.aston.astore.dto.order.OrderDto;
 import ru.aston.astore.entity.order.OrderStatus;
 
@@ -9,7 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface OrderService {
-    OrderDto addOrder(NewOrderDto newOrder);
+    OrderDto addOrder(OrderDto newOrder);
 
     boolean addProductsIntoOrder(Collection<UUID> productsIds, UUID orderId);
 

@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import ru.aston.astore.dto.client.ClientDto;
-import ru.aston.astore.dto.client.NewClientDto;
 import ru.aston.astore.service.client.ClientService;
 
 import java.io.BufferedReader;
@@ -48,11 +47,11 @@ class ClientControllerTest {
 
         Mockito.when(request.getReader()).thenReturn(getReader(json));
         Mockito.when(response.getWriter()).thenReturn(new PrintWriter(writer));
-        Mockito.when(service.addClient(ArgumentMatchers.any(NewClientDto.class))).thenReturn(dto);
+        Mockito.when(service.addClient(ArgumentMatchers.any(ClientDto.class))).thenReturn(dto);
         controller.doPost(request, response);
 
         Mockito.verify(response).setStatus(HttpServletResponse.SC_CREATED);
-        Mockito.verify(service).addClient(mapper.readValue(json, NewClientDto.class));
+        Mockito.verify(service).addClient(mapper.readValue(json, ClientDto.class));
         assertEquals(mapper.writeValueAsString(dto), writer.toString());
     }
 
@@ -117,10 +116,6 @@ class ClientControllerTest {
     }
 
     private String getNewClientJson() throws JsonProcessingException {
-        NewClientDto dto = new NewClientDto();
-        dto.setFirstName("John");
-        dto.setLastName("Doe");
-
-        return mapper.writeValueAsString(dto);
+        return mapper.writeValueAsString(getClientDto());
     }
 }

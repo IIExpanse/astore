@@ -1,6 +1,5 @@
 package ru.aston.astore.service.product;
 
-import ru.aston.astore.dto.product.NewProductDto;
 import ru.aston.astore.dto.product.ProductDto;
 
 import java.util.Collection;
@@ -8,7 +7,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface ProductService {
-    ProductDto addProduct(NewProductDto newProduct);
+    ProductDto addProduct(ProductDto newProduct);
 
     Optional<ProductDto> findById(UUID id);
 

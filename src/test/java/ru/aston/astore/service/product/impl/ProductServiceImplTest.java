@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
-import ru.aston.astore.dto.product.NewProductDto;
+import ru.aston.astore.dto.product.ProductDto;
 import ru.aston.astore.entity.product.Product;
 import ru.aston.astore.entity.product.ProductType;
 import ru.aston.astore.mapper.product.ProductMapper;
@@ -33,7 +33,7 @@ class ProductServiceImplTest {
 
     @Test
     void addProduct() {
-        NewProductDto dto = getNewProductDto();
+        ProductDto dto = getNewProductDto();
         Product product = getDefaultProduct();
 
         Mockito.when(repository.addProduct(ArgumentMatchers.any(Product.class))).thenReturn(Optional.of(product));
@@ -42,7 +42,7 @@ class ProductServiceImplTest {
 
     @Test
     void throwsExceptionForEmptyAddedReturn() {
-        NewProductDto dto = getNewProductDto();
+        ProductDto dto = getNewProductDto();
 
         Mockito.when(repository.addProduct(ArgumentMatchers.any(Product.class))).thenReturn(Optional.empty());
         assertThrows(RuntimeException.class, () -> service.addProduct(dto));
@@ -79,8 +79,8 @@ class ProductServiceImplTest {
         assertTrue(service.removeProduct(UUID.randomUUID()));
     }
 
-    private NewProductDto getNewProductDto() {
-        NewProductDto dto = new NewProductDto();
+    private ProductDto getNewProductDto() {
+        ProductDto dto = new ProductDto();
         dto.setTitle("Wooden chair");
         dto.setPrice(14.5f);
         dto.setType(ProductType.FURNITURE);

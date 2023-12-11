@@ -8,7 +8,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.mapstruct.factory.Mappers;
 import ru.aston.astore.controller.ControllerUtils;
-import ru.aston.astore.dto.product.NewProductDto;
 import ru.aston.astore.dto.product.ProductDto;
 import ru.aston.astore.mapper.product.ProductMapper;
 import ru.aston.astore.repository.product.impl.JDBCProductRepository;
@@ -38,10 +37,10 @@ public class ProductController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        NewProductDto dto;
+        ProductDto dto;
         try {
             dto = mapper.readValue(
-                    req.getReader().lines().collect(Collectors.joining()), NewProductDto.class);
+                    req.getReader().lines().collect(Collectors.joining()), ProductDto.class);
 
         } catch (JsonProcessingException e) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid request body.");
