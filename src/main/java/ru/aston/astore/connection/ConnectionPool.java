@@ -14,11 +14,12 @@ import java.util.stream.Collectors;
 
 public class ConnectionPool {
     private static HikariDataSource dataSource;
-    public static final String schemaPath = "schema.sql";
-    public static final String testSchemaPath = "src/main/resources/schema.sql";
+    public static final String SCHEMA_PATH = "schema.sql";
+    public static final String TEST_SCHEMA_PATH = "src/main/resources/schema.sql";
+    private static final String DRIVER_CLASS_NAME = "org.postgresql.Driver";
     private static final String URL = "jdbc:postgresql://localhost/postgres";
-    private static final String user = "postgres";
-    private static final String password = "iamroot";
+    private static final String USER = "postgres";
+    private static final String PASSWORD = "iamroot";
 
     private ConnectionPool() {
     }
@@ -49,16 +50,16 @@ public class ConnectionPool {
 
     private static void initializeDataSource() {
         HikariConfig config = new HikariConfig();
-        config.setDriverClassName("org.postgresql.Driver");
+        config.setDriverClassName(DRIVER_CLASS_NAME);
         config.setJdbcUrl(URL);
-        config.setUsername(user);
-        config.setPassword(password);
+        config.setUsername(USER);
+        config.setPassword(PASSWORD);
         dataSource = new HikariDataSource(config);
     }
 
     private static void initializeDatabase() {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(
-                Objects.requireNonNull(ConnectionPool.class.getClassLoader().getResourceAsStream(schemaPath))))) {
+                Objects.requireNonNull(ConnectionPool.class.getClassLoader().getResourceAsStream(SCHEMA_PATH))))) {
             String sql = br.lines().collect(Collectors.joining());
             dataSource.getConnection().prepareStatement(sql).execute();
 

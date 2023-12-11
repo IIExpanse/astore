@@ -28,10 +28,10 @@ class JDBCEmployeeRepositoryTest {
     @BeforeAll
     static void setTestDataSource() throws IOException {
         JdbcDataSource dataSource = new JdbcDataSource();
-        dataSource.setURL(TestProperties.testDatabaseURL);
+        dataSource.setURL(TestProperties.TEST_DATABASE_URL);
         ConnectionPool.setDataSource(dataSource);
 
-        try (BufferedReader br = new BufferedReader(new FileReader(ConnectionPool.testSchemaPath))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(ConnectionPool.TEST_SCHEMA_PATH))) {
             schema = br.lines().collect(Collectors.joining());
         }
     }
