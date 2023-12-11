@@ -1,6 +1,5 @@
 package ru.aston.astore.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -9,13 +8,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import ru.aston.astore.dto.EmployeeDto;
-import ru.aston.astore.entity.EmployeeRole;
 import ru.aston.astore.service.EmployeeService;
+import ru.aston.astore.util.ObjectsFactory;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.List;
@@ -42,11 +38,11 @@ class EmployeeControllerTest {
 
     @Test
     void addNewEmployee() throws IOException {
-        String json = getNewEmployeeJson();
-        EmployeeDto dto = getEmployeeDto();
+        String json = ObjectsFactory.getEmployeeJson(mapper);
+        EmployeeDto dto = ObjectsFactory.getEmployeeDto();
         StringWriter writer = new StringWriter();
 
-        Mockito.when(request.getReader()).thenReturn(getReader(json));
+        Mockito.when(request.getReader()).thenReturn(ObjectsFactory.getReader(json));
         Mockito.when(response.getWriter()).thenReturn(new PrintWriter(writer));
         Mockito.when(service.add(ArgumentMatchers.any(EmployeeDto.class))).thenReturn(dto);
         controller.doPost(request, response);
@@ -58,7 +54,7 @@ class EmployeeControllerTest {
 
     @Test
     void getEmployeeById() throws IOException {
-        EmployeeDto dto = getEmployeeDto();
+        EmployeeDto dto = ObjectsFactory.getEmployeeDto();
         StringWriter writer = new StringWriter();
 
         Mockito.when(request.getParameter("id")).thenReturn(dto.getId().toString());
@@ -72,7 +68,7 @@ class EmployeeControllerTest {
 
     @Test
     void getEmployeeByName() throws IOException {
-        EmployeeDto dto = getEmployeeDto();
+        EmployeeDto dto = ObjectsFactory.getEmployeeDto();
         StringWriter writer = new StringWriter();
 
         Mockito.when(request.getParameter("id")).thenReturn(null);
@@ -88,7 +84,7 @@ class EmployeeControllerTest {
 
     @Test
     void updateEmployee() throws IOException {
-        Mockito.when(request.getReader()).thenReturn(getReader(mapper.writeValueAsString(getEmployeeDto())));
+        Mockito.when(request.getReader()).thenReturn(ObjectsFactory.getReader(ObjectsFactory.getEmployeeJson(mapper)));
         Mockito.when(service.update(ArgumentMatchers.any(EmployeeDto.class))).thenReturn(true);
         controller.doPut(request, response);
         Mockito.verify(response).setStatus(HttpServletResponse.SC_OK);
@@ -96,28 +92,10 @@ class EmployeeControllerTest {
 
     @Test
     void removeEmployee() throws IOException {
-        EmployeeDto dto = getEmployeeDto();
+        EmployeeDto dto = ObjectsFactory.getEmployeeDto();
         Mockito.when(request.getParameter("id")).thenReturn(dto.getId().toString());
         Mockito.when(service.remove(ArgumentMatchers.any(UUID.class))).thenReturn(true);
         controller.doDelete(request, response);
         Mockito.verify(response).setStatus(HttpServletResponse.SC_OK);
-    }
-
-    private BufferedReader getReader(String s) {
-        return new BufferedReader(new InputStreamReader(new ByteArrayInputStream(s.getBytes())));
-    }
-
-    private EmployeeDto getEmployeeDto() {
-        return new EmployeeDto(
-                UUID.randomUUID(),
-                "John",
-                "Doe",
-                EmployeeRole.MANAGER,
-                List.of()
-        );
-    }
-
-    private String getNewEmployeeJson() throws JsonProcessingException {
-        return mapper.writeValueAsString(getEmployeeDto());
     }
 }

@@ -9,13 +9,13 @@ import ru.aston.astore.connection.ConnectionPool;
 import ru.aston.astore.entity.Product;
 import ru.aston.astore.entity.ProductType;
 import ru.aston.astore.properties.TestProperties;
+import ru.aston.astore.util.ObjectsFactory;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -52,14 +52,14 @@ class JDBCProductRepositoryTest {
 
     @Test
     void addAndFindProduct() {
-        Product product = getDefaultProduct();
+        Product product = ObjectsFactory.getDefaultProduct();
         Product returnedProduct = repository.add(product).orElseThrow();
         assertEquals(product, returnedProduct);
     }
 
     @Test
     void findByTitle() {
-        Product product = getDefaultProduct();
+        Product product = ObjectsFactory.getDefaultProduct();
         repository.add(product);
         assertTrue(repository.findByTitle(product.getTitle())
                 .contains(product));
@@ -69,7 +69,7 @@ class JDBCProductRepositoryTest {
 
     @Test
     void updateProduct() {
-        Product product = getDefaultProduct();
+        Product product = ObjectsFactory.getDefaultProduct();
         repository.add(product);
         product = Product.builder()
                 .id(product.getId())
@@ -87,19 +87,9 @@ class JDBCProductRepositoryTest {
 
     @Test
     void removeProduct() {
-        Product product = getDefaultProduct();
+        Product product = ObjectsFactory.getDefaultProduct();
         repository.add(product);
         assertTrue(repository.remove(product.getId()));
         assertTrue(repository.findById(product.getId()).isEmpty());
-    }
-
-    private Product getDefaultProduct() {
-        return Product.builder()
-                .id(UUID.randomUUID())
-                .title("Wooden chair")
-                .price(9.5f)
-                .discount(null)
-                .type(ProductType.FURNITURE)
-                .build();
     }
 }

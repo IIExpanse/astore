@@ -10,8 +10,8 @@ import ru.aston.astore.entity.Order;
 import ru.aston.astore.entity.OrderStatus;
 import ru.aston.astore.mapper.OrderMapper;
 import ru.aston.astore.repository.OrderRepository;
+import ru.aston.astore.util.ObjectsFactory;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -34,8 +34,8 @@ class OrderServiceImplTest {
 
     @Test
     void addOrder() {
-        OrderDto dto = getNewOrderDto();
-        Order order = getDefaultOrder();
+        OrderDto dto = ObjectsFactory.getOrderDto();
+        Order order = ObjectsFactory.getDefaultOrder(UUID.randomUUID());
 
         Mockito.when(repository.add(ArgumentMatchers.any(Order.class))).thenReturn(Optional.of(order));
         assertEquals(mapper.mapToDto(order), service.add(dto));
@@ -50,7 +50,7 @@ class OrderServiceImplTest {
 
     @Test
     void findById() {
-        Order order = getDefaultOrder();
+        Order order = ObjectsFactory.getDefaultOrder(UUID.randomUUID());
 
         Mockito.when(repository.findById(ArgumentMatchers.any(UUID.class))).thenReturn(Optional.of(order));
         assertEquals(Optional.of(mapper.mapToDto(order)), service.findById(UUID.randomUUID()));
@@ -66,7 +66,7 @@ class OrderServiceImplTest {
 
     @Test
     void findByStatus() {
-        Order order = getDefaultOrder();
+        Order order = ObjectsFactory.getDefaultOrder(UUID.randomUUID());
 
         Mockito.when(repository.findByStatus(ArgumentMatchers.any(OrderStatus.class)))
                 .thenReturn(List.of(order));
@@ -75,7 +75,7 @@ class OrderServiceImplTest {
 
     @Test
     void updateOrder() {
-        Order order = getDefaultOrder();
+        Order order = ObjectsFactory.getDefaultOrder(UUID.randomUUID());
 
         Mockito.when(repository.update(ArgumentMatchers.any(Order.class))).thenReturn(true);
         assertTrue(service.update(mapper.mapToDto(order)));
@@ -85,24 +85,5 @@ class OrderServiceImplTest {
     void removeOrder() {
         Mockito.when(repository.remove(ArgumentMatchers.any(UUID.class))).thenReturn(true);
         assertTrue(service.remove(UUID.randomUUID()));
-    }
-
-    private Order getDefaultOrder() {
-        return Order.builder()
-                .id(UUID.randomUUID())
-                .client_id(UUID.randomUUID())
-                .status(OrderStatus.PENDING)
-                .created(LocalDateTime.now())
-                .products(List.of())
-                .build();
-    }
-
-    private OrderDto getNewOrderDto() {
-        OrderDto dto = new OrderDto();
-        dto.setClient_id(UUID.randomUUID());
-        dto.setStatus(OrderStatus.PENDING);
-        dto.setProducts(List.of(UUID.randomUUID()));
-
-        return dto;
     }
 }

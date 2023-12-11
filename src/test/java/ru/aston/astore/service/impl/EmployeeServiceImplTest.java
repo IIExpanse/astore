@@ -7,9 +7,9 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import ru.aston.astore.dto.EmployeeDto;
 import ru.aston.astore.entity.Employee;
-import ru.aston.astore.entity.EmployeeRole;
 import ru.aston.astore.mapper.EmployeeMapper;
 import ru.aston.astore.repository.EmployeeRepository;
+import ru.aston.astore.util.ObjectsFactory;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,8 +33,8 @@ class EmployeeServiceImplTest {
 
     @Test
     void addEmployee() {
-        EmployeeDto dto = getNewEmployeeDto();
-        Employee employee = getDefaultEmployee();
+        EmployeeDto dto = ObjectsFactory.getEmployeeDto();
+        Employee employee = ObjectsFactory.getDefaultEmployee();
 
         Mockito.when(repository.add(ArgumentMatchers.any(Employee.class))).thenReturn(Optional.of(employee));
         assertEquals(mapper.mapToDto(employee), service.add(dto));
@@ -42,7 +42,7 @@ class EmployeeServiceImplTest {
 
     @Test
     void throwsExceptionForEmptyAddedReturn() {
-        EmployeeDto dto = getNewEmployeeDto();
+        EmployeeDto dto = ObjectsFactory.getEmployeeDto();
 
         Mockito.when(repository.add(ArgumentMatchers.any(Employee.class))).thenReturn(Optional.empty());
         assertThrows(RuntimeException.class, () -> service.add(dto));
@@ -50,7 +50,7 @@ class EmployeeServiceImplTest {
 
     @Test
     void findById() {
-        Employee employee = getDefaultEmployee();
+        Employee employee = ObjectsFactory.getDefaultEmployee();
 
         Mockito.when(repository.findById(ArgumentMatchers.any(UUID.class))).thenReturn(Optional.of(employee));
         assertEquals(Optional.of(mapper.mapToDto(employee)), service.findById(UUID.randomUUID()));
@@ -58,7 +58,7 @@ class EmployeeServiceImplTest {
 
     @Test
     void findByName() {
-        Employee employee = getDefaultEmployee();
+        Employee employee = ObjectsFactory.getDefaultEmployee();
 
         Mockito.when(repository.findByName(ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
                 .thenReturn(List.of(employee));
@@ -67,7 +67,7 @@ class EmployeeServiceImplTest {
 
     @Test
     void updateEmployee() {
-        Employee employee = getDefaultEmployee();
+        Employee employee = ObjectsFactory.getDefaultEmployee();
 
         Mockito.when(repository.update(ArgumentMatchers.any(Employee.class))).thenReturn(true);
         assertTrue(service.update(mapper.mapToDto(employee)));
@@ -77,23 +77,5 @@ class EmployeeServiceImplTest {
     void removeEmployee() {
         Mockito.when(repository.remove(ArgumentMatchers.any(UUID.class))).thenReturn(true);
         assertTrue(service.remove(UUID.randomUUID()));
-    }
-
-    private EmployeeDto getNewEmployeeDto() {
-        EmployeeDto dto = new EmployeeDto();
-        dto.setFirstName("John");
-        dto.setLastName("Doe");
-        dto.setRole(EmployeeRole.MANAGER);
-
-        return dto;
-    }
-
-    private Employee getDefaultEmployee() {
-        return Employee.builder()
-                .id(UUID.randomUUID())
-                .firstName("Jack")
-                .lastName("Bond")
-                .role(EmployeeRole.MANAGER)
-                .build();
     }
 }

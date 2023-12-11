@@ -8,13 +8,13 @@ import org.junit.jupiter.api.Test;
 import ru.aston.astore.connection.ConnectionPool;
 import ru.aston.astore.entity.Client;
 import ru.aston.astore.properties.TestProperties;
+import ru.aston.astore.util.ObjectsFactory;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -51,14 +51,14 @@ class JDBCClientRepositoryTest {
 
     @Test
     void addAndFindClient() {
-        Client client = getDefaultClient();
+        Client client = ObjectsFactory.getDefaultClient();
         Client returnedClient = repository.add(client).orElseThrow();
         assertEquals(client, returnedClient);
     }
 
     @Test
     void findByName() {
-        Client client = getDefaultClient();
+        Client client = ObjectsFactory.getDefaultClient();
         repository.add(client);
         assertTrue(repository.findByName(client.getFirstName(), client.getLastName())
                 .contains(client));
@@ -72,7 +72,7 @@ class JDBCClientRepositoryTest {
 
     @Test
     void updateClient() {
-        Client client = getDefaultClient();
+        Client client = ObjectsFactory.getDefaultClient();
         repository.add(client);
         client = Client.builder()
                 .id(client.getId())
@@ -88,17 +88,9 @@ class JDBCClientRepositoryTest {
 
     @Test
     void removeClient() {
-        Client client = getDefaultClient();
+        Client client = ObjectsFactory.getDefaultClient();
         repository.add(client);
         assertTrue(repository.remove(client.getId()));
         assertTrue(repository.findById(client.getId()).isEmpty());
-    }
-
-    private Client getDefaultClient() {
-        return Client.builder()
-                .id(UUID.randomUUID())
-                .firstName("John")
-                .lastName("Doe")
-                .build();
     }
 }

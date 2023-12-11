@@ -1,6 +1,5 @@
 package ru.aston.astore.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -11,14 +10,11 @@ import org.mockito.Mockito;
 import ru.aston.astore.dto.OrderDto;
 import ru.aston.astore.entity.OrderStatus;
 import ru.aston.astore.service.OrderService;
+import ru.aston.astore.util.ObjectsFactory;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -44,11 +40,11 @@ class OrderControllerTest {
 
     @Test
     void addNewOrder() throws IOException {
-        String json = getNewOrderJson();
-        OrderDto dto = getOrderDto();
+        String json = ObjectsFactory.getOrderJson(mapper);
+        OrderDto dto = ObjectsFactory.getOrderDto();
         StringWriter writer = new StringWriter();
 
-        Mockito.when(request.getReader()).thenReturn(getReader(json));
+        Mockito.when(request.getReader()).thenReturn(ObjectsFactory.getReader(json));
         Mockito.when(response.getWriter()).thenReturn(new PrintWriter(writer));
         Mockito.when(service.add(ArgumentMatchers.any(OrderDto.class))).thenReturn(dto);
         controller.doPost(request, response);
@@ -60,7 +56,7 @@ class OrderControllerTest {
 
     @Test
     void getOrderById() throws IOException {
-        OrderDto dto = getOrderDto();
+        OrderDto dto = ObjectsFactory.getOrderDto();
         StringWriter writer = new StringWriter();
 
         Mockito.when(request.getParameter("id")).thenReturn(dto.getId().toString());
@@ -75,7 +71,7 @@ class OrderControllerTest {
 
     @Test
     void getOrderByStatus() throws IOException {
-        OrderDto dto = getOrderDto();
+        OrderDto dto = ObjectsFactory.getOrderDto();
         StringWriter writer = new StringWriter();
 
         Mockito.when(request.getParameter("status")).thenReturn(dto.getStatus().toString());
@@ -90,7 +86,7 @@ class OrderControllerTest {
 
     @Test
     void getProductIdsByOrder() throws IOException {
-        OrderDto dto = getOrderDto();
+        OrderDto dto = ObjectsFactory.getOrderDto();
         StringWriter writer = new StringWriter();
         List<UUID> list = List.of(UUID.randomUUID());
 
@@ -107,7 +103,7 @@ class OrderControllerTest {
     @Test
     void updateOrder() throws IOException {
         Mockito.when(request.getPathInfo()).thenReturn(null);
-        Mockito.when(request.getReader()).thenReturn(getReader(mapper.writeValueAsString(getOrderDto())));
+        Mockito.when(request.getReader()).thenReturn(ObjectsFactory.getReader(ObjectsFactory.getOrderJson(mapper)));
         Mockito.when(service.update(ArgumentMatchers.any(OrderDto.class))).thenReturn(true);
         controller.doPut(request, response);
         Mockito.verify(response).setStatus(HttpServletResponse.SC_OK);
@@ -115,7 +111,7 @@ class OrderControllerTest {
 
     @Test
     void addProductsIntoOrder() throws IOException {
-        OrderDto dto = getOrderDto();
+        OrderDto dto = ObjectsFactory.getOrderDto();
         String[] productIds = {UUID.randomUUID().toString()};
 
         Mockito.when(request.getPathInfo()).thenReturn("/products");
@@ -129,29 +125,10 @@ class OrderControllerTest {
 
     @Test
     void removeOrder() throws IOException {
-        OrderDto dto = getOrderDto();
+        OrderDto dto = ObjectsFactory.getOrderDto();
         Mockito.when(request.getParameter("id")).thenReturn(dto.getId().toString());
         Mockito.when(service.remove(ArgumentMatchers.any(UUID.class))).thenReturn(true);
         controller.doDelete(request, response);
         Mockito.verify(response).setStatus(HttpServletResponse.SC_OK);
-    }
-
-    private BufferedReader getReader(String s) {
-        return new BufferedReader(new InputStreamReader(new ByteArrayInputStream(s.getBytes())));
-    }
-
-    private OrderDto getOrderDto() {
-        return new OrderDto(
-                UUID.randomUUID(),
-                UUID.randomUUID(),
-                null,
-                OrderStatus.PENDING,
-                LocalDateTime.now(),
-                List.of(UUID.randomUUID())
-        );
-    }
-
-    private String getNewOrderJson() throws JsonProcessingException {
-        return mapper.writeValueAsString(getOrderDto());
     }
 }

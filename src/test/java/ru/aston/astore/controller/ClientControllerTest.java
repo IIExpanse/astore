@@ -1,6 +1,5 @@
 package ru.aston.astore.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -10,11 +9,9 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import ru.aston.astore.dto.ClientDto;
 import ru.aston.astore.service.ClientService;
+import ru.aston.astore.util.ObjectsFactory;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.List;
@@ -41,11 +38,11 @@ class ClientControllerTest {
 
     @Test
     void addClient() throws IOException {
-        String json = getNewClientJson();
-        ClientDto dto = getClientDto();
+        String json = ObjectsFactory.getClientJson(mapper);
+        ClientDto dto = ObjectsFactory.getClientDto();
         StringWriter writer = new StringWriter();
 
-        Mockito.when(request.getReader()).thenReturn(getReader(json));
+        Mockito.when(request.getReader()).thenReturn(ObjectsFactory.getReader(json));
         Mockito.when(response.getWriter()).thenReturn(new PrintWriter(writer));
         Mockito.when(service.add(ArgumentMatchers.any(ClientDto.class))).thenReturn(dto);
         controller.doPost(request, response);
@@ -57,7 +54,7 @@ class ClientControllerTest {
 
     @Test
     void getClientById() throws IOException {
-        ClientDto dto = getClientDto();
+        ClientDto dto = ObjectsFactory.getClientDto();
         StringWriter writer = new StringWriter();
 
         Mockito.when(request.getParameter("id")).thenReturn(dto.getId().toString());
@@ -71,7 +68,7 @@ class ClientControllerTest {
 
     @Test
     void getClientByName() throws IOException {
-        ClientDto dto = getClientDto();
+        ClientDto dto = ObjectsFactory.getClientDto();
         StringWriter writer = new StringWriter();
 
         Mockito.when(request.getParameter("id")).thenReturn(null);
@@ -87,7 +84,7 @@ class ClientControllerTest {
 
     @Test
     void updateClient() throws IOException {
-        Mockito.when(request.getReader()).thenReturn(getReader(mapper.writeValueAsString(getClientDto())));
+        Mockito.when(request.getReader()).thenReturn(ObjectsFactory.getReader(ObjectsFactory.getClientJson(mapper)));
         Mockito.when(service.update(ArgumentMatchers.any(ClientDto.class))).thenReturn(true);
         controller.doPut(request, response);
         Mockito.verify(response).setStatus(HttpServletResponse.SC_OK);
@@ -95,27 +92,10 @@ class ClientControllerTest {
 
     @Test
     void removeClient() throws IOException {
-        ClientDto dto = getClientDto();
+        ClientDto dto = ObjectsFactory.getClientDto();
         Mockito.when(request.getParameter("id")).thenReturn(dto.getId().toString());
         Mockito.when(service.remove(ArgumentMatchers.any(UUID.class))).thenReturn(true);
         controller.doDelete(request, response);
         Mockito.verify(response).setStatus(HttpServletResponse.SC_OK);
-    }
-
-    private BufferedReader getReader(String s) {
-        return new BufferedReader(new InputStreamReader(new ByteArrayInputStream(s.getBytes())));
-    }
-
-    private ClientDto getClientDto() {
-        return new ClientDto(
-                UUID.randomUUID(),
-                "John",
-                "Doe",
-                List.of()
-        );
-    }
-
-    private String getNewClientJson() throws JsonProcessingException {
-        return mapper.writeValueAsString(getClientDto());
     }
 }

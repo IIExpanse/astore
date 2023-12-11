@@ -9,6 +9,7 @@ import ru.aston.astore.dto.ClientDto;
 import ru.aston.astore.entity.Client;
 import ru.aston.astore.mapper.ClientMapper;
 import ru.aston.astore.repository.ClientRepository;
+import ru.aston.astore.util.ObjectsFactory;
 
 import java.util.List;
 import java.util.Optional;
@@ -32,8 +33,8 @@ class ClientServiceImplTest {
 
     @Test
     void addClient() {
-        ClientDto dto = getClientDto();
-        Client client = getDefaultClient();
+        ClientDto dto = ObjectsFactory.getClientDto();
+        Client client = ObjectsFactory.getDefaultClient();
 
         Mockito.when(repository.add(ArgumentMatchers.any(Client.class))).thenReturn(Optional.of(client));
         assertEquals(mapper.mapToDto(client), service.add(dto));
@@ -41,7 +42,7 @@ class ClientServiceImplTest {
 
     @Test
     void throwsExceptionForEmptyAddedReturn() {
-        ClientDto dto = getClientDto();
+        ClientDto dto = ObjectsFactory.getClientDto();
 
         Mockito.when(repository.add(ArgumentMatchers.any(Client.class))).thenReturn(Optional.empty());
         assertThrows(RuntimeException.class, () -> service.add(dto));
@@ -49,7 +50,7 @@ class ClientServiceImplTest {
 
     @Test
     void findById() {
-        Client client = getDefaultClient();
+        Client client = ObjectsFactory.getDefaultClient();
 
         Mockito.when(repository.findById(ArgumentMatchers.any(UUID.class))).thenReturn(Optional.of(client));
         assertEquals(Optional.of(mapper.mapToDto(client)), service.findById(UUID.randomUUID()));
@@ -57,7 +58,7 @@ class ClientServiceImplTest {
 
     @Test
     void findByName() {
-        Client client = getDefaultClient();
+        Client client = ObjectsFactory.getDefaultClient();
 
         Mockito.when(repository.findByName(ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
                 .thenReturn(List.of(client));
@@ -66,7 +67,7 @@ class ClientServiceImplTest {
 
     @Test
     void updateClient() {
-        Client client = getDefaultClient();
+        Client client = ObjectsFactory.getDefaultClient();
 
         Mockito.when(repository.update(ArgumentMatchers.any(Client.class))).thenReturn(true);
         assertTrue(service.update(mapper.mapToDto(client)));
@@ -76,21 +77,5 @@ class ClientServiceImplTest {
     void removeClient() {
         Mockito.when(repository.remove(ArgumentMatchers.any(UUID.class))).thenReturn(true);
         assertTrue(service.remove(UUID.randomUUID()));
-    }
-
-    private Client getDefaultClient() {
-        return Client.builder()
-                .id(UUID.randomUUID())
-                .firstName("John")
-                .lastName("Doe")
-                .build();
-    }
-
-    private ClientDto getClientDto() {
-        ClientDto dto = new ClientDto();
-        dto.setFirstName("John");
-        dto.setLastName("Doe");
-
-        return dto;
     }
 }

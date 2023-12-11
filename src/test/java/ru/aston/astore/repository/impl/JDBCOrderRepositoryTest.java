@@ -10,8 +10,8 @@ import ru.aston.astore.entity.Client;
 import ru.aston.astore.entity.Order;
 import ru.aston.astore.entity.OrderStatus;
 import ru.aston.astore.entity.Product;
-import ru.aston.astore.entity.ProductType;
 import ru.aston.astore.properties.TestProperties;
+import ru.aston.astore.util.ObjectsFactory;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -64,8 +64,8 @@ class JDBCOrderRepositoryTest {
 
     @Test
     void addAndFindOrder() {
-        Client client = getDefaultClient();
-        Order order = getDefaultOrder(client.getId());
+        Client client = ObjectsFactory.getDefaultClient();
+        Order order = ObjectsFactory.getDefaultOrder(client.getId());
         clientRepository.add(client);
         Order returnedOrder = orderRepository.add(order).orElseThrow();
         assertEquals(order, returnedOrder);
@@ -73,15 +73,15 @@ class JDBCOrderRepositoryTest {
 
     @Test
     void addProductsIntoOrder() {
-        Client client = getDefaultClient();
+        Client client = ObjectsFactory.getDefaultClient();
         clientRepository.add(client);
 
-        Product product1 = getDefaultProduct();
-        Product product2 = getDefaultProduct();
+        Product product1 = ObjectsFactory.getDefaultProduct();
+        Product product2 = ObjectsFactory.getDefaultProduct();
         productRepository.add(product1);
         productRepository.add(product2);
 
-        Order order = getDefaultOrder(client.getId());
+        Order order = ObjectsFactory.getDefaultOrder(client.getId());
         orderRepository.add(order);
 
         assertTrue(orderRepository.addProductsIntoOrder(
@@ -94,8 +94,8 @@ class JDBCOrderRepositoryTest {
 
     @Test
     void findByStatus() {
-        Client client = getDefaultClient();
-        Order order = getDefaultOrder(client.getId());
+        Client client = ObjectsFactory.getDefaultClient();
+        Order order = ObjectsFactory.getDefaultOrder(client.getId());
         clientRepository.add(client);
         orderRepository.add(order);
 
@@ -104,8 +104,8 @@ class JDBCOrderRepositoryTest {
 
     @Test
     void updateOrder() {
-        Client client = getDefaultClient();
-        Order order = getDefaultOrder(client.getId());
+        Client client = ObjectsFactory.getDefaultClient();
+        Order order = ObjectsFactory.getDefaultOrder(client.getId());
         clientRepository.add(client);
         orderRepository.add(order);
 
@@ -122,40 +122,12 @@ class JDBCOrderRepositoryTest {
 
     @Test
     void removeOrder() {
-        Client client = getDefaultClient();
-        Order order = getDefaultOrder(client.getId());
+        Client client = ObjectsFactory.getDefaultClient();
+        Order order = ObjectsFactory.getDefaultOrder(client.getId());
         clientRepository.add(client);
         orderRepository.add(order);
 
         assertTrue(orderRepository.remove(order.getId()));
         assertTrue(orderRepository.findById(order.getId()).isEmpty());
-    }
-
-    private Order getDefaultOrder(UUID clientId) {
-        return Order.builder()
-                .id(UUID.randomUUID())
-                .client_id(clientId)
-                .status(OrderStatus.PENDING)
-                .created(LocalDateTime.now())
-                .products(List.of())
-                .build();
-    }
-
-    private Product getDefaultProduct() {
-        return Product.builder()
-                .id(UUID.randomUUID())
-                .title("Wooden chair")
-                .price(9.5f)
-                .discount(null)
-                .type(ProductType.FURNITURE)
-                .build();
-    }
-
-    private Client getDefaultClient() {
-        return Client.builder()
-                .id(UUID.randomUUID())
-                .firstName("John")
-                .lastName("Doe")
-                .build();
     }
 }

@@ -9,13 +9,13 @@ import ru.aston.astore.connection.ConnectionPool;
 import ru.aston.astore.entity.Employee;
 import ru.aston.astore.entity.EmployeeRole;
 import ru.aston.astore.properties.TestProperties;
+import ru.aston.astore.util.ObjectsFactory;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -52,14 +52,14 @@ class JDBCEmployeeRepositoryTest {
 
     @Test
     void addAndFindEmployee() {
-        Employee employee = getDefaultEmployee();
+        Employee employee = ObjectsFactory.getDefaultEmployee();
         Employee returnedEmployee = repository.add(employee).orElseThrow();
         assertEquals(employee, returnedEmployee);
     }
 
     @Test
     void findByName() {
-        Employee employee = getDefaultEmployee();
+        Employee employee = ObjectsFactory.getDefaultEmployee();
         repository.add(employee);
         assertTrue(repository.findByName(employee.getFirstName(), employee.getLastName())
                 .contains(employee));
@@ -73,7 +73,7 @@ class JDBCEmployeeRepositoryTest {
 
     @Test
     void updateEmployee() {
-        Employee employee = getDefaultEmployee();
+        Employee employee = ObjectsFactory.getDefaultEmployee();
         repository.add(employee);
         employee = Employee.builder()
                 .id(employee.getId())
@@ -90,18 +90,9 @@ class JDBCEmployeeRepositoryTest {
 
     @Test
     void removeEmployee() {
-        Employee employee = getDefaultEmployee();
+        Employee employee = ObjectsFactory.getDefaultEmployee();
         repository.add(employee);
         assertTrue(repository.remove(employee.getId()));
         assertTrue(repository.findById(employee.getId()).isEmpty());
-    }
-
-    private Employee getDefaultEmployee() {
-        return Employee.builder()
-                .id(UUID.randomUUID())
-                .firstName("Jack")
-                .lastName("Bond")
-                .role(EmployeeRole.MANAGER)
-                .build();
     }
 }

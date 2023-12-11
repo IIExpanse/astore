@@ -1,6 +1,5 @@
 package ru.aston.astore.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -9,13 +8,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import ru.aston.astore.dto.ProductDto;
-import ru.aston.astore.entity.ProductType;
 import ru.aston.astore.service.ProductService;
+import ru.aston.astore.util.ObjectsFactory;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.List;
@@ -42,11 +38,11 @@ class ProductControllerTest {
 
     @Test
     void addNewProduct() throws IOException {
-        String json = getNewProductJson();
-        ProductDto dto = getProductDto();
+        String json = ObjectsFactory.getProductJson(mapper);
+        ProductDto dto = ObjectsFactory.getProductDto();
         StringWriter writer = new StringWriter();
 
-        Mockito.when(request.getReader()).thenReturn(getReader(json));
+        Mockito.when(request.getReader()).thenReturn(ObjectsFactory.getReader(json));
         Mockito.when(response.getWriter()).thenReturn(new PrintWriter(writer));
         Mockito.when(service.add(ArgumentMatchers.any(ProductDto.class))).thenReturn(dto);
         controller.doPost(request, response);
@@ -58,7 +54,7 @@ class ProductControllerTest {
 
     @Test
     void getProductById() throws IOException {
-        ProductDto dto = getProductDto();
+        ProductDto dto = ObjectsFactory.getProductDto();
         StringWriter writer = new StringWriter();
 
         Mockito.when(request.getParameter("id")).thenReturn(dto.getId().toString());
@@ -72,7 +68,7 @@ class ProductControllerTest {
 
     @Test
     void getProductByTitle() throws IOException {
-        ProductDto dto = getProductDto();
+        ProductDto dto = ObjectsFactory.getProductDto();
         StringWriter writer = new StringWriter();
 
         Mockito.when(request.getParameter("id")).thenReturn(null);
@@ -87,7 +83,7 @@ class ProductControllerTest {
 
     @Test
     void updateProduct() throws IOException {
-        Mockito.when(request.getReader()).thenReturn(getReader(mapper.writeValueAsString(getProductDto())));
+        Mockito.when(request.getReader()).thenReturn(ObjectsFactory.getReader(ObjectsFactory.getProductJson(mapper)));
         Mockito.when(service.update(ArgumentMatchers.any(ProductDto.class))).thenReturn(true);
         controller.doPut(request, response);
         Mockito.verify(response).setStatus(HttpServletResponse.SC_OK);
@@ -95,28 +91,10 @@ class ProductControllerTest {
 
     @Test
     void removeProduct() throws IOException {
-        ProductDto dto = getProductDto();
+        ProductDto dto = ObjectsFactory.getProductDto();
         Mockito.when(request.getParameter("id")).thenReturn(dto.getId().toString());
         Mockito.when(service.remove(ArgumentMatchers.any(UUID.class))).thenReturn(true);
         controller.doDelete(request, response);
         Mockito.verify(response).setStatus(HttpServletResponse.SC_OK);
-    }
-
-    private BufferedReader getReader(String s) {
-        return new BufferedReader(new InputStreamReader(new ByteArrayInputStream(s.getBytes())));
-    }
-
-    private ProductDto getProductDto() {
-        return new ProductDto(
-                UUID.randomUUID(),
-                "Wooden chair",
-                12.5f,
-                null,
-                ProductType.FURNITURE
-        );
-    }
-
-    private String getNewProductJson() throws JsonProcessingException {
-        return mapper.writeValueAsString(getProductDto());
     }
 }
