@@ -41,7 +41,7 @@ public class JDBCEmployeeRepository implements EmployeeRepository {
             return findById(newEmployee.getId());
 
         } catch (SQLException e) {
-            log.debug("Error while adding a new employee: " + e.getMessage());
+            log.error("Error while adding a new employee: " + e.getMessage());
         }
         return Optional.empty();
     }
@@ -58,7 +58,7 @@ public class JDBCEmployeeRepository implements EmployeeRepository {
             return ans;
 
         } catch (SQLException e) {
-            log.debug(String.format("Error while finding an employee with id=%s: %s",
+            log.error(String.format("Error while finding an employee with id=%s: %s",
                     id.toString(), e.getMessage()));
         }
         return Optional.empty();
@@ -80,7 +80,7 @@ public class JDBCEmployeeRepository implements EmployeeRepository {
             return list;
 
         } catch (SQLException e) {
-            log.debug(String.format("Error while finding employees with firstName=%s and lastName=%s: %s",
+            log.error(String.format("Error while finding employees with firstName=%s and lastName=%s: %s",
                     firstName, lastName, e.getMessage()));
         }
         return List.of();
@@ -100,7 +100,7 @@ public class JDBCEmployeeRepository implements EmployeeRepository {
             return affectedRows > 0;
 
         } catch (SQLException e) {
-            log.debug(String.format("Error while updating an employee with id=%s: %s",
+            log.error(String.format("Error while updating an employee with id=%s: %s",
                     updatedEmployee.getId().toString(), e.getMessage()));
         }
         return false;
@@ -117,7 +117,7 @@ public class JDBCEmployeeRepository implements EmployeeRepository {
             return affectedRows > 0;
 
         } catch (SQLException e) {
-            log.debug(String.format("Error while removing an employee with id=%s: %s",
+            log.error(String.format("Error while removing an employee with id=%s: %s",
                     id.toString(), e.getMessage()));
         }
         return false;

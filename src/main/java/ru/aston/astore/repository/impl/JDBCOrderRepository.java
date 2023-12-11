@@ -61,7 +61,7 @@ public class JDBCOrderRepository implements OrderRepository {
             return findById(newOrder.getId());
 
         } catch (SQLException e) {
-            log.debug("Error while adding a new order: " + e.getMessage());
+            log.error("Error while adding a new order: " + e.getMessage());
         }
         return Optional.empty();
     }
@@ -85,7 +85,7 @@ public class JDBCOrderRepository implements OrderRepository {
             return successfulCommands > 0;
 
         } catch (SQLException e) {
-            log.debug(String.format("Error while adding products into order with id=%s: %s",
+            log.error(String.format("Error while adding products into order with id=%s: %s",
                     orderId.toString(), e.getMessage()));
         }
         return false;
@@ -104,7 +104,7 @@ public class JDBCOrderRepository implements OrderRepository {
             return ans;
 
         } catch (SQLException e) {
-            log.debug(String.format("Error while finding an order with id=%s: %s",
+            log.error(String.format("Error while finding an order with id=%s: %s",
                     id.toString(), e.getMessage()));
         }
         return Optional.empty();
@@ -126,7 +126,7 @@ public class JDBCOrderRepository implements OrderRepository {
             return list;
 
         } catch (SQLException e) {
-            log.debug(String.format("Error while retrieving product IDs from an order with id=%s: %s",
+            log.error(String.format("Error while retrieving product IDs from an order with id=%s: %s",
                     id.toString(), e.getMessage()));
         }
         return List.of();
@@ -148,7 +148,7 @@ public class JDBCOrderRepository implements OrderRepository {
             return list;
 
         } catch (SQLException e) {
-            log.debug(String.format("Error while finding orders with status%s: %s",
+            log.error(String.format("Error while finding orders with status%s: %s",
                     status.toString(), e.getMessage()));
         }
         return List.of();
@@ -174,7 +174,7 @@ public class JDBCOrderRepository implements OrderRepository {
             return affectedRows > 0;
 
         } catch (SQLException e) {
-            log.debug(String.format("Error while updating an order with id=%s: %s",
+            log.error(String.format("Error while updating an order with id=%s: %s",
                     updatedOrder.getId().toString(), e.getMessage()));
         }
         return false;
@@ -195,7 +195,7 @@ public class JDBCOrderRepository implements OrderRepository {
             return affectedRows > 0;
 
         } catch (Exception e) {
-            log.debug(String.format("Error while removing an order with id=%s: %s",
+            log.error(String.format("Error while removing an order with id=%s: %s",
                     id.toString(), e.getMessage()));
         }
         return false;

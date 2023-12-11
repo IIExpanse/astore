@@ -48,7 +48,7 @@ public class JDBCProductRepository implements ProductRepository {
             return findById(newProduct.getId());
 
         } catch (SQLException e) {
-            log.debug("Error while adding a new product: " + e.getMessage());
+            log.error("Error while adding a new product: " + e.getMessage());
         }
         return Optional.empty();
     }
@@ -65,7 +65,7 @@ public class JDBCProductRepository implements ProductRepository {
             return ans;
 
         } catch (SQLException e) {
-            log.debug(String.format("Error while finding a product with id=%s: %s",
+            log.error(String.format("Error while finding a product with id=%s: %s",
                     id.toString(), e.getMessage()));
         }
         return Optional.empty();
@@ -86,7 +86,7 @@ public class JDBCProductRepository implements ProductRepository {
             return list;
 
         } catch (SQLException e) {
-            log.debug(String.format("Error while finding products with title=%s: %s",
+            log.error(String.format("Error while finding products with title=%s: %s",
                     title, e.getMessage()));
         }
         return List.of();
@@ -113,7 +113,7 @@ public class JDBCProductRepository implements ProductRepository {
             return affectedRows > 0;
 
         } catch (SQLException e) {
-            log.debug(String.format("Error while updating an employee with id=%s: %s",
+            log.error(String.format("Error while updating an employee with id=%s: %s",
                     updatedProduct.getId().toString(), e.getMessage()));
         }
         return false;
@@ -130,7 +130,7 @@ public class JDBCProductRepository implements ProductRepository {
             return affectedRows > 0;
 
         } catch (SQLException e) {
-            log.debug(String.format("Error while removing an employee with id=%s: %s",
+            log.error(String.format("Error while removing an employee with id=%s: %s",
                     id.toString(), e.getMessage()));
         }
         return false;

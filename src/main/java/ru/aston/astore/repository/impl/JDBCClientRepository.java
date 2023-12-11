@@ -37,7 +37,7 @@ public class JDBCClientRepository implements ClientRepository {
             return findById(newClient.getId());
 
         } catch (SQLException e) {
-            log.debug("Error while adding a new client: " + e.getMessage());
+            log.error("Error while adding a new client: " + e.getMessage());
         }
         return Optional.empty();
     }
@@ -52,7 +52,7 @@ public class JDBCClientRepository implements ClientRepository {
             return rs.next() ? Optional.of(mapRow(rs)) : Optional.empty();
 
         } catch (SQLException e) {
-            log.debug(String.format("Error while finding a client with id=%s: %s",
+            log.error(String.format("Error while finding a client with id=%s: %s",
                     id.toString(), e.getMessage()));
         }
         return Optional.empty();
@@ -73,7 +73,7 @@ public class JDBCClientRepository implements ClientRepository {
             return list;
 
         } catch (SQLException e) {
-            log.debug(String.format("Error while finding clients with firstName=%s and lastName=%s: %s",
+            log.error(String.format("Error while finding clients with firstName=%s and lastName=%s: %s",
                     firstName, lastName, e.getMessage()));
         }
         return List.of();
@@ -91,7 +91,7 @@ public class JDBCClientRepository implements ClientRepository {
             return affectedRows > 0;
 
         } catch (SQLException e) {
-            log.debug(String.format("Error while updating a client with id=%s: %s",
+            log.error(String.format("Error while updating a client with id=%s: %s",
                     updatedClient.getId().toString(), e.getMessage()));
         }
         return false;
@@ -107,7 +107,7 @@ public class JDBCClientRepository implements ClientRepository {
             return affectedRows > 0;
 
         } catch (Exception e) {
-            log.debug(String.format("Error while removing a client with id=%s: %s",
+            log.error(String.format("Error while removing a client with id=%s: %s",
                     id.toString(), e.getMessage()));
         }
         return false;
