@@ -166,7 +166,7 @@ public class JDBCOrderRepository implements OrderRepository {
                 ps.setObject(2, updatedOrder.getAssignedManager());
 
             } else {
-                ps.setNull(2, Types.OTHER);
+                ps.setNull(2, Types.NULL);
             }
             int affectedRows = ps.executeUpdate();
             ps.close();

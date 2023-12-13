@@ -36,7 +36,7 @@ public class JDBCProductRepository implements ProductRepository {
             ps.setString(2, newProduct.getTitle());
             ps.setFloat(3, newProduct.getPrice());
             ps.setString(5, newProduct.getType().toString());
-            if (newProduct.getDiscount() != null) {
+            if (newProduct.getDiscount() != null && newProduct.getDiscount() != 0) {
                 ps.setFloat(4, newProduct.getDiscount());
 
             } else {
@@ -100,11 +100,11 @@ public class JDBCProductRepository implements ProductRepository {
             ps.setFloat(2, updatedProduct.getPrice());
             ps.setString(4, updatedProduct.getType().toString());
             ps.setObject(5, updatedProduct.getId());
-            if (updatedProduct.getDiscount() != null) {
+            if (updatedProduct.getDiscount() != null && updatedProduct.getDiscount() != 0) {
                 ps.setFloat(3, updatedProduct.getDiscount());
 
             } else {
-                ps.setNull(3, Types.FLOAT);
+                ps.setNull(3, Types.NULL);
             }
 
             int affectedRows = ps.executeUpdate();
