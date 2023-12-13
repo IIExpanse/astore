@@ -69,6 +69,7 @@ class EmployeeServiceImplTest {
     void updateEmployee() {
         Employee employee = ObjectsFactory.getDefaultEmployee();
 
+        Mockito.when(repository.findById(ArgumentMatchers.any(UUID.class))).thenReturn(Optional.of(employee));
         Mockito.when(repository.update(ArgumentMatchers.any(Employee.class))).thenReturn(true);
         assertTrue(service.update(mapper.mapToDto(employee)));
     }

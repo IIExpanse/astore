@@ -69,6 +69,7 @@ class ClientServiceImplTest {
     void updateClient() {
         Client client = ObjectsFactory.getDefaultClient();
 
+        Mockito.when(repository.findById(ArgumentMatchers.any(UUID.class))).thenReturn(Optional.of(client));
         Mockito.when(repository.update(ArgumentMatchers.any(Client.class))).thenReturn(true);
         assertTrue(service.update(mapper.mapToDto(client)));
     }

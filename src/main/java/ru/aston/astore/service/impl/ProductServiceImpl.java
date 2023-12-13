@@ -40,7 +40,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public boolean update(ProductDto updatedProduct) {
-        return repository.update(mapper.mapToEntity(updatedProduct));
+        Optional<Product> src = repository.findById(updatedProduct.getId());
+        return src.filter(product -> repository.update(mapper.update(product, updatedProduct))).isPresent();
     }
 
     @Override

@@ -2,17 +2,19 @@ package ru.aston.astore.entity;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Collection;
 import java.util.UUID;
 
 @Builder
 @Getter
+@Setter
 public class Client  {
-    private final UUID id;
-    private final String firstName;
-    private final String lastName;
-    private final Collection<UUID> madeOrders;
+    private UUID id;
+    private String firstName;
+    private String lastName;
+    private Collection<UUID> madeOrders;
 
     @Override
     public boolean equals(Object o) {

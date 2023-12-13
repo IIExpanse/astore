@@ -40,7 +40,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public boolean update(EmployeeDto updatedEmployee) {
-        return repository.update(mapper.mapToEntity(updatedEmployee));
+        Optional<Employee> src = repository.findById(updatedEmployee.getId());
+        return src.filter(employee -> repository.update(mapper.update(employee, updatedEmployee))).isPresent();
     }
 
     @Override

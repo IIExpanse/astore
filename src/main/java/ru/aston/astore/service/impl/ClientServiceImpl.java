@@ -40,7 +40,8 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public boolean update(ClientDto updatedClient) {
-        return repository.update(mapper.mapToEntity(updatedClient));
+        Optional<Client> src = repository.findById(updatedClient.getId());
+        return src.filter(client -> repository.update(mapper.update(client, updatedClient))).isPresent();
     }
 
     @Override

@@ -2,18 +2,20 @@ package ru.aston.astore.entity;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Collection;
 import java.util.UUID;
 
 @Builder
 @Getter
+@Setter
 public class Employee {
-    private final UUID id;
-    private final String firstName;
-    private final String lastName;
-    private final EmployeeRole role;
-    private final Collection<UUID> assignedOrders;
+    private UUID id;
+    private String firstName;
+    private String lastName;
+    private EmployeeRole role;
+    private Collection<UUID> assignedOrders;
 
     @Override
     public boolean equals(Object o) {

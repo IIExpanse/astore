@@ -77,6 +77,7 @@ class OrderServiceImplTest {
     void updateOrder() {
         Order order = ObjectsFactory.getDefaultOrder(UUID.randomUUID());
 
+        Mockito.when(repository.findById(ArgumentMatchers.any(UUID.class))).thenReturn(Optional.of(order));
         Mockito.when(repository.update(ArgumentMatchers.any(Order.class))).thenReturn(true);
         assertTrue(service.update(mapper.mapToDto(order)));
     }

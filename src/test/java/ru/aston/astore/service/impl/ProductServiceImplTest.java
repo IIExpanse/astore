@@ -69,6 +69,7 @@ class ProductServiceImplTest {
     void updateProduct() {
         Product product = ObjectsFactory.getDefaultProduct();
 
+        Mockito.when(repository.findById(ArgumentMatchers.any(UUID.class))).thenReturn(Optional.of(product));
         Mockito.when(repository.update(ArgumentMatchers.any(Product.class))).thenReturn(true);
         assertTrue(service.update(mapper.mapToDto(product)));
     }

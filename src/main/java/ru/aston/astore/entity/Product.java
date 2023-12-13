@@ -2,17 +2,19 @@ package ru.aston.astore.entity;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.UUID;
 
 @Builder
 @Getter
+@Setter
 public class Product {
-    private final UUID id;
-    private final String title;
-    private final Float price;
-    private final Float discount;
-    private final ProductType type;
+    private UUID id;
+    private String title;
+    private Float price;
+    private Float discount;
+    private ProductType type;
 
     @Override
     public boolean equals(Object o) {

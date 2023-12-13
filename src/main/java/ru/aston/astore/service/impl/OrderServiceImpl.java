@@ -56,7 +56,8 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public boolean update(OrderDto updatedOrder) {
-        return repository.update(mapper.mapToEntity(updatedOrder));
+        Optional<Order> src = repository.findById(updatedOrder.getId());
+        return src.filter(order -> repository.update(mapper.update(order, updatedOrder))).isPresent();
     }
 
     @Override

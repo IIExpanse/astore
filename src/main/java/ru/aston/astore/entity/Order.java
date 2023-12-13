@@ -2,20 +2,22 @@ package ru.aston.astore.entity;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.UUID;
 
-@Getter
 @Builder
+@Getter
+@Setter
 public class Order {
-    private final UUID id;
-    private final UUID client_id;
-    private final UUID assignedManager;
-    private final OrderStatus status;
-    private final LocalDateTime created;
-    private final Collection<UUID> products;
+    private UUID id;
+    private UUID client_id;
+    private UUID assignedManager;
+    private OrderStatus status;
+    private LocalDateTime created;
+    private Collection<UUID> products;
 
     @Override
     public boolean equals(Object o) {
